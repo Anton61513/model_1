@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Авторизація — Управління заявками</title>
   
-  <!-- Підключення Tailwind CSS та Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -27,10 +26,9 @@
 </head>
 <body class="bg-darkBg text-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
 
-  <!-- Контейнер форми -->
   <div class="w-full max-w-md bg-cardBg rounded-3xl p-6 sm:p-8 shadow-2xl relative border border-slate-800/80">
     
-    <!-- Перемикачі Мова та Тема -->
+    <!-- Переключатели Язык / Тема -->
     <div class="flex justify-between items-center mb-6">
       <button type="button" onclick="toggleLanguage()" class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 transition">
         <i class="fa-solid fa-globe text-indigo-400"></i>
@@ -42,7 +40,7 @@
       </button>
     </div>
 
-    <!-- Іконка та Заголовок -->
+    <!-- Заголовок -->
     <div class="text-center mb-6">
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 mb-4">
         <i class="fa-solid fa-shield-halved text-3xl"></i>
@@ -51,7 +49,10 @@
       <p id="authSubtitle" class="text-xs text-slate-400 mt-1.5">Управління заявками та персоналом складу</p>
     </div>
 
-    <!-- Вкладки: Вхід / Реєстрація -->
+    <!-- Блок сообщений об ошибках -->
+    <div id="alertBox" class="hidden mb-4 p-3 rounded-xl text-xs font-medium border"></div>
+
+    <!-- Вкладки: Вход / Регистрация -->
     <div class="flex bg-slate-900/90 p-1.5 rounded-2xl mb-6 border border-slate-800/50">
       <button type="button" id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-bold rounded-xl bg-indigo-600/30 text-indigo-300 transition duration-200">
         Вхід
@@ -64,7 +65,7 @@
     <!-- Форма -->
     <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
       
-      <!-- Поле: Роль -->
+      <!-- Выбор Роли -->
       <div>
         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">РОЛЬ</label>
         <select id="authRole" onchange="handleRoleOrTabChange()" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm font-medium text-white focus:outline-none focus:border-indigo-500 transition">
@@ -74,18 +75,18 @@
         </select>
       </div>
 
-      <!-- Поле: Вибір складу (Тільки для Адміністратора) -->
+      <!-- Выбор склада (для Админа) -->
       <div id="warehouseSelectBox">
         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">ОБЕРІТЬ СВІЙ СКЛАД *</label>
         <select id="authWarehouse" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm font-medium text-white focus:outline-none focus:border-indigo-500 transition">
           <option value="oil">Oil склад (Код 221)</option>
-          <option value="stasi">Стасі склад (Код 222)</option>
-          <option value="kharkiv">Харків склад (Код 223)</option>
+          <option value="stasi">ЕРЦ / Стасі склад (Код 222)</option>
+          <option value="kharkiv">Мурманська / Харків склад (Код 223)</option>
           <option value="dnipro">Дніпро склад (Код 224)</option>
         </select>
       </div>
 
-      <!-- Дод. поля тільки для Реєстрації (Ім'я, Прізвище) -->
+      <!-- ФИО (только Регистрация) -->
       <div id="nameFieldsBox" class="hidden space-y-4">
         <div>
           <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">ПРІЗВИЩЕ *</label>
@@ -97,53 +98,78 @@
         </div>
       </div>
 
-      <!-- Поле: Код доступу -->
+      <!-- Код доступа -->
       <div id="codeAccessBox">
         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">КОД ДОСТУПУ *</label>
         <input type="password" id="authCode" placeholder="•••" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
       </div>
 
-      <!-- Поле: Телефон -->
+      <!-- Телефон -->
       <div>
         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">НОМЕР ТЕЛЕФОНУ *</label>
         <input type="tel" id="authPhone" required placeholder="0000000003" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
       </div>
 
-      <!-- Поле: Пароль -->
+      <!-- Пароль -->
       <div>
         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">ПАРОЛЬ *</label>
         <input type="password" id="authPassword" required placeholder="••••••" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
       </div>
 
-      <!-- Кнопка відправки -->
+      <!-- Кнопка отправки -->
       <button type="submit" id="btnSubmitAuth" class="w-full py-3.5 bg-accentBlue hover:bg-accentHover text-white font-bold rounded-xl text-sm shadow-lg shadow-indigo-600/30 transition duration-200 mt-2">
         Увійти в акаунт
       </button>
     </form>
   </div>
 
-  <!-- Вбудована логіка JavaScript -->
   <script>
-    let currentMode = 'login'; // 'login' або 'register'
+    let currentMode = 'login';
+
+    // Таблица соответствия кодов доступа для конкретных складов
+    const WAREHOUSE_CODES = {
+      oil: "221",
+      stasi: "222",
+      kharkiv: "223",
+      dnipro: "224"
+    };
+
+    // Код доступа для Менеджера
+    const MANAGER_CODE = "111";
+
+    // Ссылки для перенаправления
+    const REDIRECT_PAGES = {
+      admin: "admin.html",
+      manager: "manager.html",
+      outsource: "outsource.html"
+    };
+
+    function showAlert(msg, isError = true) {
+      const box = document.getElementById('alertBox');
+      box.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/30', 'text-red-400', 'bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+      
+      if (isError) {
+        box.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-400');
+      } else {
+        box.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+      }
+      box.textContent = msg;
+    }
 
     function switchAuthTab(tab) {
       currentMode = tab;
       const isLogin = tab === 'login';
+      document.getElementById('alertBox').classList.add('hidden');
       
-      const btnLogin = document.getElementById('tabLogin');
-      const btnRegister = document.getElementById('tabRegister');
-      const btnSubmit = document.getElementById('btnSubmitAuth');
+      document.getElementById('tabLogin').className = isLogin 
+        ? "flex-1 py-2.5 text-xs font-bold rounded-xl bg-indigo-600/30 text-indigo-300 transition duration-200"
+        : "flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition duration-200";
 
-      if (isLogin) {
-        btnLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-xl bg-indigo-600/30 text-indigo-300 transition duration-200";
-        btnRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition duration-200";
-        btnSubmit.textContent = "Увійти в акаунт";
-      } else {
-        btnRegister.className = "flex-1 py-2.5 text-xs font-bold rounded-xl bg-indigo-600/30 text-indigo-300 transition duration-200";
-        btnLogin.className = "flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition duration-200";
-        btnSubmit.textContent = "Зареєструватися";
-      }
+      document.getElementById('tabRegister').className = !isLogin 
+        ? "flex-1 py-2.5 text-xs font-bold rounded-xl bg-indigo-600/30 text-indigo-300 transition duration-200"
+        : "flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition duration-200";
 
+      document.getElementById('btnSubmitAuth').textContent = isLogin ? "Увійти в акаунт" : "Зареєструватися";
       handleRoleOrTabChange();
     }
 
@@ -151,17 +177,9 @@
       const role = document.getElementById('authRole').value;
       const isRegister = currentMode === 'register';
 
-      // Склад показуємо тільки для Адміністратора
-      const warehouseBox = document.getElementById('warehouseSelectBox');
-      warehouseBox.style.display = (role === 'admin') ? 'block' : 'none';
-
-      // Ім'я та Прізвище тільки при Реєстрації
-      const nameBox = document.getElementById('nameFieldsBox');
-      nameBox.classList.toggle('hidden', !isRegister);
-
-      // Код доступу тільки для Адміністратора та Менеджера
-      const codeBox = document.getElementById('codeAccessBox');
-      codeBox.style.display = (role === 'outsource') ? 'none' : 'block';
+      document.getElementById('warehouseSelectBox').style.display = (role === 'admin') ? 'block' : 'none';
+      document.getElementById('nameFieldsBox').classList.toggle('hidden', !isRegister);
+      document.getElementById('codeAccessBox').style.display = (role === 'outsource') ? 'none' : 'block';
     }
 
     function handleAuthSubmit(e) {
@@ -173,12 +191,43 @@
       const code = document.getElementById('authCode').value.trim();
       const warehouse = document.getElementById('authWarehouse').value;
 
+      // 1. СТРОГАЯ ВАЛИДАЦИЯ КОДОВ ДОСТУПА
+      if (role === 'manager') {
+        if (!code) {
+          showAlert("Введіть код доступу для Менеджера!");
+          return;
+        }
+        if (code !== MANAGER_CODE) {
+          showAlert("Невірний код доступу для Менеджера (потрібен код 111)!");
+          return;
+        }
+      } else if (role === 'admin') {
+        if (!code) {
+          showAlert("Введіть код доступу склада!");
+          return;
+        }
+        const expectedCode = WAREHOUSE_CODES[warehouse];
+        if (code !== expectedCode) {
+          showAlert(`Невірний код доступу! Для обраного складу потрібен код ${expectedCode}`);
+          return;
+        }
+      }
+
+      const users = JSON.parse(localStorage.getItem('app_users') || '[]');
+
+      // 2. РЕГИСТРАЦИЯ
       if (currentMode === 'register') {
         const firstName = document.getElementById('regFirstName').value.trim();
         const lastName = document.getElementById('regLastName').value.trim();
 
         if (!firstName || !lastName) {
-          alert("Будь ласка, введіть ім'я та прізвище!");
+          showAlert("Введіть ім'я та прізвище!");
+          return;
+        }
+
+        const existingUser = users.find(u => u.phone === phone);
+        if (existingUser) {
+          showAlert("Користувач з таким номером телефону вже існує!");
           return;
         }
 
@@ -190,18 +239,42 @@
           warehouse: role === 'admin' ? warehouse : null
         };
 
+        users.push(newUser);
+        localStorage.setItem('app_users', JSON.stringify(users));
         localStorage.setItem('currentUser', JSON.stringify(newUser));
-        alert(`Реєстрація успішна! Вітаємо, ${newUser.name}`);
-      } else {
-        const userData = {
-          role,
-          name: role === 'manager' ? 'Кирилл Лупан' : 'Користувач',
-          phone,
-          warehouse: role === 'admin' ? warehouse : null
-        };
 
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        alert(`Успішний вхід! Роль: ${role}`);
+        showAlert("Реєстрація успішна! Перенаправлення...", false);
+
+        setTimeout(() => {
+          window.location.href = REDIRECT_PAGES[role];
+        }, 1000);
+
+      } 
+      // 3. ВХОД В АККАУНТ
+      else {
+        const user = users.find(u => u.phone === phone);
+
+        if (!user) {
+          showAlert("Користувача з таким номером не знайдено. Спочатку зареєструйтесь!");
+          return;
+        }
+
+        if (user.password !== password) {
+          showAlert("Невірний пароль!");
+          return;
+        }
+
+        if (user.role !== role) {
+          showAlert(`Цей акаунт зареєстрований як: ${user.role}. Оберіть правильну роль!`);
+          return;
+        }
+
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        showAlert("Успішний вхід! Перенаправлення...", false);
+
+        setTimeout(() => {
+          window.location.href = REDIRECT_PAGES[role];
+        }, 1000);
       }
     }
 
