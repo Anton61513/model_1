@@ -496,7 +496,7 @@
                         <span id="modal-removed-count-badge" class="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full">Убрано: 2 чел.</span>
                     </label>
                     <p id="txt-modal-removed-desc" class="text-[11px] text-gray-500 dark:text-gray-300">
-                        Обязательно допишите вручную данные снятых людей (например: <i>Санжакова Марина +380665445267</i>)
+                        Обязательно допишите вручную данные снятых людей (например: <i>Санжакова Марина 0665445267</i>)
                     </p>
                     <textarea id="modal-removed-info" rows="3" placeholder="Санжакова Марина 0665445267 - снята по семейным обстоятельствам" class="w-full p-3 rounded-xl glass-input text-sm"></textarea>
                 </div>
@@ -572,7 +572,10 @@
                 created: "Создал",
                 people: "чел.",
                 removed: "Убраны",
-                wasReduced: "Было сокращено"
+                wasReduced: "Было сокращено",
+                btnRespond: "Откликнуться / Взять в работу",
+                responded: "Вы откликнулись",
+                responses: "Отклики"
             },
             uk: {
                 headerSub: "Управління заявками та доступом",
@@ -629,7 +632,10 @@
                 created: "Створив",
                 people: "ос.",
                 removed: "Прибрано",
-                wasReduced: "Було скорочено"
+                wasReduced: "Було скорочено",
+                btnRespond: "Відгукнутися / Взяти в роботу",
+                responded: "Ви відгукнулися",
+                responses: "Відгуки"
             },
             en: {
                 headerSub: "Requests & Access Management Portal",
@@ -686,7 +692,10 @@
                 created: "Created by",
                 people: "staff",
                 removed: "Removed",
-                wasReduced: "Reduced from"
+                wasReduced: "Reduced from",
+                btnRespond: "Accept Shift",
+                responded: "Shift Accepted",
+                responses: "Responses"
             }
         };
 
@@ -714,7 +723,8 @@
                 status: "modified",
                 createdBy: "Администратор",
                 modifiedBy: "Менеджер (000)",
-                createdAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                createdAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                responses: []
             }
         ];
 
@@ -966,13 +976,13 @@
 
                     const isBlacklisted = this.blacklist.some(checkPhoneMatch);
                     if (isBlacklisted) {
-                        this.showToast('Регистрация заблокирована: номер в черном списке!', 'error');
+                        this.showToast('Номер в черном списке!', 'error');
                         return;
                     }
 
                     const isWhitelisted = this.whitelist.some(checkPhoneMatch);
                     if (!isWhitelisted) {
-                        this.showToast('Ошибка доступа: номер отсутсвует в белом списке!', 'error');
+                        this.showToast('Номер отсутствует в белом списке!', 'error');
                         return;
                     }
 
@@ -1091,12 +1101,38 @@
                     status: 'pending',
                     createdBy: this.currentUser.name,
                     modifiedBy: null,
-                    createdAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    createdAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    responses: []
                 };
 
                 this.requests.unshift(newReq);
                 this.saveState();
                 this.showToast(`Заявка создана и отправлена менеджеру!`, 'success');
+            }
+
+            // Outsource Response Toggle
+            toggleResponse(reqId) {
+                const req = this.requests.find(r => r.id === reqId);
+                if (!req || !this.currentUser) return;
+
+                if (!req.responses) req.responses = [];
+
+                const userPhone = this.currentUser.phone;
+                const index = req.responses.findIndex(resp => resp.phone === userPhone);
+
+                if (index > -1) {
+                    req.responses.splice(index, 1);
+                    this.showToast('Вы отозвали свой отклик', 'info');
+                } else {
+                    req.responses.push({
+                        name: this.currentUser.name,
+                        phone: userPhone,
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    });
+                    this.showToast('Вы успешно откликнулись на заявку!', 'success');
+                }
+
+                this.saveState();
             }
 
             // Render Requests Cards
@@ -1130,6 +1166,8 @@
                     }
 
                     const isManager = this.currentUser && this.currentUser.role === 'manager';
+                    const isOutsource = this.currentUser && this.currentUser.role === 'outsource';
+                    const hasResponded = req.responses && req.responses.some(resp => resp.phone === this.currentUser?.phone);
 
                     return `
                         <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border hover:border-gray-400 dark:hover:border-gray-700 transition duration-200">
@@ -1166,6 +1204,15 @@
                                             </div>
                                         </div>
                                     ` : ''}
+
+                                    ${req.responses && req.responses.length > 0 ? `
+                                        <div class="mt-2 pt-2 border-t border-gray-700/40 text-xs">
+                                            <div class="text-[11px] font-semibold text-gray-400 mb-1"><i class="fa-solid fa-user-check text-green-400 mr-1"></i>${t.responses} (${req.responses.length}):</div>
+                                            <div class="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
+                                                ${req.responses.map(res => `<span class="bg-gray-800 text-gray-300 text-[10px] px-2 py-0.5 rounded-md border border-gray-700">${res.name} (${res.phone})</span>`).join('')}
+                                            </div>
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
 
@@ -1174,6 +1221,15 @@
                                     <button onclick="app.openEditModal('${req.id}')" class="flex-1 py-2 px-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 dark:text-blue-400 font-semibold rounded-xl text-xs transition border border-blue-500/30 flex items-center justify-center space-x-1.5">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                         <span>Редактировать</span>
+                                    </button>
+                                </div>
+                            ` : ''}
+
+                            ${isOutsource ? `
+                                <div class="pt-2">
+                                    <button onclick="app.toggleResponse('${req.id}')" class="w-full py-2.5 px-3 ${hasResponded ? 'bg-green-600 hover:bg-green-500' : 'bg-blue-600 hover:bg-blue-500'} text-white font-semibold rounded-xl text-xs transition shadow-md flex items-center justify-center space-x-1.5">
+                                        <i class="fa-solid ${hasResponded ? 'fa-circle-check' : 'fa-hand-pointer'}"></i>
+                                        <span>${hasResponded ? t.responded : t.btnRespond}</span>
                                     </button>
                                 </div>
                             ` : ''}
