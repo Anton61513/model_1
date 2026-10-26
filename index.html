@@ -19,9 +19,7 @@
                             600: '#2563eb',
                             700: '#1d4ed8',
                             900: '#1e3a8a',
-                        },
-                        darkbg: '#0b0f19',
-                        darkcard: 'rgba(17, 24, 39, 0.7)',
+                        }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -30,13 +28,18 @@
             }
         }
     </script>
-    <!-- Google Fonts Inter & FontAwesome Icons -->
+    <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark Theme Styles */
+        html.dark body {
             background-color: #0b0f19;
             color: #f3f4f6;
             background-image: 
@@ -44,41 +47,70 @@
                 radial-gradient(at 90% 90%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
             background-attachment: fixed;
         }
-        .glass-panel {
-            background: rgba(17, 24, 39, 0.75);
+        html.dark .glass-panel {
+            background: rgba(17, 24, 39, 0.8);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .glass-card {
+        html.dark .glass-card {
             background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .glass-input {
+        html.dark .glass-input {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #f3f4f6;
         }
+
+        /* Light Theme Styles */
+        html:not(.dark) body {
+            background-color: #f8fafc;
+            color: #0f172a;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+        html:not(.dark) .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        html:not(.dark) .glass-card {
+            background: rgba(241, 245, 249, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        html:not(.dark) .glass-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+            color: #0f172a;
+        }
+
         .glass-input:focus {
             border-color: #3b82f6;
             outline: none;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
         }
-        /* Custom scrollbar */
+
+        /* Scrollbars */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.6);
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(156, 163, 175, 0.4);
             border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(156, 163, 175, 0.6);
         }
     </style>
 </head>
@@ -87,8 +119,8 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
 
-    <!-- Navigation Bar Header -->
-    <header class="glass-panel sticky top-0 z-40 border-b border-gray-800">
+    <!-- Navigation Header -->
+    <header class="glass-panel sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <!-- Brand / Logo -->
             <div class="flex items-center space-x-3 cursor-pointer" onclick="app.showTab('requests')">
@@ -96,103 +128,117 @@
                     <i class="fa-solid fa-boxes-stacked"></i>
                 </div>
                 <div>
-                    <span class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">
+                    <span class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 dark:from-white via-indigo-500 dark:via-gray-200 to-indigo-600 dark:to-gray-400">
                         WMS Outsource
                     </span>
-                    <span class="text-xs text-blue-400 block -mt-1 font-medium">Управление заявками и доступом</span>
+                    <span id="txt-header-sub" class="text-xs text-blue-500 dark:text-blue-400 block -mt-1 font-medium">
+                        Управление заявками и доступом
+                    </span>
                 </div>
             </div>
 
-            <!-- Current User Badge & Logout -->
-            <div id="user-nav-section" class="flex items-center space-x-4 hidden">
-                <div class="flex items-center space-x-3 bg-gray-800/60 px-3 py-1.5 rounded-xl border border-gray-700/50">
-                    <div id="user-avatar" class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-semibold text-sm">
-                        U
-                    </div>
-                    <div class="text-left hidden sm:block">
-                        <div id="user-display-name" class="text-xs font-semibold text-gray-200">Пользователь</div>
-                        <div id="user-role-badge" class="text-[10px] uppercase tracking-wider text-blue-400 font-bold">Роль</div>
-                    </div>
+            <!-- Controls: Language, Theme & User Settings -->
+            <div class="flex items-center space-x-3">
+                <!-- Language Selector -->
+                <div class="relative">
+                    <select id="lang-selector" onchange="app.setLanguage(this.value)" class="glass-input text-xs font-semibold px-2.5 py-1.5 rounded-xl cursor-pointer">
+                        <option value="ru" class="bg-gray-900 dark:bg-gray-900 text-white">RU 🇷🇺</option>
+                        <option value="uk" class="bg-gray-900 dark:bg-gray-900 text-white">UKR 🇺🇦</option>
+                        <option value="en" class="bg-gray-900 dark:bg-gray-900 text-white">ENG 🇬🇧</option>
+                    </select>
                 </div>
-                <button onclick="app.logout()" class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition duration-200" title="Выйти из системы">
-                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
+
+                <!-- Theme Toggle Button -->
+                <button onclick="app.toggleTheme()" class="p-2 rounded-xl glass-input hover:text-blue-500 transition duration-200" title="Переключить тему">
+                    <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
                 </button>
+
+                <!-- Current User Badge & Logout -->
+                <div id="user-nav-section" class="flex items-center space-x-3 hidden">
+                    <div class="flex items-center space-x-2.5 glass-card px-3 py-1.5 rounded-xl border">
+                        <div id="user-avatar" class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-xs text-white">
+                            U
+                        </div>
+                        <div class="text-left hidden sm:block">
+                            <div id="user-display-name" class="text-xs font-semibold leading-tight">Пользователь</div>
+                            <div id="user-role-badge" class="text-[10px] uppercase tracking-wider text-blue-500 dark:text-blue-400 font-bold">Роль</div>
+                        </div>
+                    </div>
+                    <button onclick="app.logout()" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition duration-200" title="Выйти">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- MAIN APP CONTENT WRAPPER -->
+    <!-- MAIN WORKSPACE -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
 
-        <!-- ================= AUTHENTICATION CONTAINER ================= -->
-        <div id="auth-container" class="max-w-md mx-auto my-8">
+        <!-- AUTHENTICATION FORM CONTAINER -->
+        <div id="auth-container" class="max-w-md mx-auto my-6">
             <div class="glass-panel p-8 rounded-3xl shadow-2xl relative overflow-hidden">
-                <!-- Background Accent Glow -->
-                <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
-
                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-1">Авторизация / Регистрация</h2>
-                    <p class="text-xs text-gray-400">Выберите вашу роль для входа в систему</p>
+                    <h2 id="txt-auth-title" class="text-2xl font-bold mb-1">Авторизация / Регистрация</h2>
+                    <p id="txt-auth-subtitle" class="text-xs text-gray-500 dark:text-gray-400">Выберите вашу роль для входа в систему</p>
                 </div>
 
                 <!-- Role Switcher Tabs -->
-                <div class="grid grid-cols-3 gap-1 bg-gray-900/80 p-1.5 rounded-2xl mb-6 border border-gray-800">
-                    <button id="role-tab-outsource" onclick="app.setAuthRole('outsource')" class="py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-400 hover:text-white">
+                <div class="grid grid-cols-3 gap-1 bg-gray-200/60 dark:bg-gray-900/80 p-1.5 rounded-2xl mb-6 border border-gray-300 dark:border-gray-800">
+                    <button id="role-tab-outsource" onclick="app.setAuthRole('outsource')" class="py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white">
                         Аутсорс
                     </button>
-                    <button id="role-tab-manager" onclick="app.setAuthRole('manager')" class="py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-400 hover:text-white">
+                    <button id="role-tab-manager" onclick="app.setAuthRole('manager')" class="py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white">
                         Менеджер
                     </button>
-                    <button id="role-tab-admin" onclick="app.setAuthRole('admin')" class="py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-400 hover:text-white">
+                    <button id="role-tab-admin" onclick="app.setAuthRole('admin')" class="py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white">
                         Админ
                     </button>
                 </div>
 
                 <!-- Auth Form -->
                 <form id="auth-form" onsubmit="app.handleAuthSubmit(event)" class="space-y-4">
-                    <!-- User Full Name (Registration) -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-300 mb-1">ФИО / Имя пользователя</label>
+                        <label id="lbl-auth-name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">ФИО / Имя пользователя</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                                 <i class="fa-regular fa-user text-sm"></i>
                             </span>
-                            <input type="text" id="auth-name" required placeholder="Иванов Иван Петрович" class="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm">
+                            <input type="text" id="auth-name" required placeholder="Иванов Иван" class="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm">
                         </div>
                     </div>
 
-                    <!-- Phone Number Field (Required for Outsource, optional for Admin/Manager) -->
+                    <!-- Phone Number Field -->
                     <div id="phone-field-wrapper">
-                        <label class="block text-xs font-medium text-gray-300 mb-1">
-                            Номер телефона <span id="phone-required-star" class="text-red-400">*</span>
+                        <label id="lbl-auth-phone" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Номер телефона <span id="phone-required-star" class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                                 <i class="fa-solid fa-phone text-sm"></i>
                             </span>
-                            <input type="tel" id="auth-phone" placeholder="06654452678" class="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm">
+                            <input type="tel" id="auth-phone" placeholder="+380665445267 или 0665445267" class="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm">
                         </div>
-                        <p id="phone-hint" class="text-[11px] text-gray-400 mt-1">Проверяется по белому/черному списку</p>
+                        <p id="txt-phone-hint" class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Проверяется по белому/черному списку</p>
                     </div>
 
-                    <!-- Access Code Field (Required for Manager - 000, Admin - 111) -->
+                    <!-- Access Code Field -->
                     <div id="code-field-wrapper" class="hidden">
-                        <label class="block text-xs font-medium text-gray-300 mb-1">
-                            Код доступа <span class="text-red-400">*</span>
+                        <label id="lbl-auth-code" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Код доступа <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                                 <i class="fa-solid fa-key text-sm"></i>
                             </span>
                             <input type="password" id="auth-code" maxlength="10" placeholder="Введите секретный код" class="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-sm">
                         </div>
-                        <p id="code-hint" class="text-[11px] text-gray-400 mt-1">
-                            Менеджер: <code class="text-blue-400 font-mono">000</code> | Админ: <code class="text-blue-400 font-mono">111</code>
+                        <p id="txt-code-hint" class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                            Менеджер: <code class="text-blue-500 font-mono">000</code> | Админ: <code class="text-blue-500 font-mono">111</code>
                         </p>
                     </div>
 
-                    <button type="submit" class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition duration-200 transform hover:-translate-y-0.5 text-sm flex items-center justify-center space-x-2">
+                    <button type="submit" id="btn-auth-submit" class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition duration-200 text-sm flex items-center justify-center space-x-2">
                         <span>Войти / Зарегистрироваться</span>
                         <i class="fa-solid fa-arrow-right text-xs"></i>
                     </button>
@@ -200,87 +246,87 @@
             </div>
         </div>
 
-        <!-- ================= DASHBOARD & PORTAL WORKSPACE ================= -->
+        <!-- DASHBOARD CONTAINER -->
         <div id="dashboard-container" class="hidden space-y-6">
 
-            <!-- Subheader Toolbar & Role Switcher Banner -->
-            <div class="glass-panel p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 border border-gray-800">
+            <!-- Subheader Toolbar -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 border">
                 <div class="flex items-center space-x-3">
-                    <span class="text-sm font-medium text-gray-400">Панель управления:</span>
-                    <span id="active-role-pill" class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <span id="txt-control-panel" class="text-sm font-medium text-gray-500 dark:text-gray-400">Панель управления:</span>
+                    <span id="active-role-pill" class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20">
                         Менеджер
                     </span>
-                    <div class="h-4 w-px bg-gray-700 hidden sm:block"></div>
-                    <div class="text-xs text-gray-400 hidden md:block">
-                        <i class="fa-solid fa-sync text-green-400 animate-spin text-[10px] mr-1"></i>
-                        Синхронизация в реальном времени активна
+                    <div class="h-4 w-px bg-gray-300 dark:bg-gray-700 hidden sm:block"></div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 hidden md:flex items-center">
+                        <i class="fa-solid fa-sync text-green-500 animate-spin text-[10px] mr-1.5"></i>
+                        <span id="txt-sync-status">Синхронизация в реальном времени активна</span>
                     </div>
                 </div>
 
-                <!-- Navigation Tabs (Only visible if role allows) -->
+                <!-- Navigation Tabs -->
                 <div class="flex items-center space-x-2">
                     <button id="nav-btn-requests" onclick="app.showTab('requests')" class="px-4 py-2 rounded-xl text-xs font-semibold transition duration-200 flex items-center space-x-2">
                         <i class="fa-solid fa-list-check"></i>
-                        <span>Заявки</span>
+                        <span id="txt-nav-requests">Заявки</span>
                     </button>
                     <button id="nav-btn-access" onclick="app.showTab('access')" class="px-4 py-2 rounded-xl text-xs font-semibold transition duration-200 flex items-center space-x-2 hidden">
                         <i class="fa-solid fa-user-shield"></i>
-                        <span>Белый / Черный список</span>
+                        <span id="txt-nav-access">Белый / Черный список</span>
                     </button>
                 </div>
             </div>
 
-            <!-- TAB 1: REQUESTS WORKFLOW (ADMIN & MANAGER & OUTSOURCE) -->
+            <!-- TAB 1: REQUESTS WORKFLOW -->
             <div id="tab-requests" class="space-y-6">
 
                 <!-- ADMIN: NEW REQUEST CREATION FORM -->
                 <div id="admin-create-request-card" class="glass-panel p-6 rounded-3xl hidden">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-800">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                         <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-500 dark:text-indigo-400 flex items-center justify-center">
                                 <i class="fa-solid fa-plus-circle text-lg"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-white">Создание новой заявки на людей</h3>
+                            <h3 id="txt-create-req-title" class="text-lg font-bold">Создание новой заявки на людей</h3>
                         </div>
-                        <span class="text-xs text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20">
+                        <span id="txt-admin-tag" class="text-xs text-indigo-500 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20">
                             Панель Администратора
                         </span>
                     </div>
 
                     <form onsubmit="app.createRequest(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-300 mb-1">Склад / Объект</label>
+                            <label id="lbl-req-warehouse" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Склад / Объект</label>
                             <select id="req-warehouse" required class="w-full px-3.5 py-2.5 rounded-xl glass-input text-sm">
-                                <option value="ЕРЦ" class="bg-gray-900">ЕРЦ (Единый Распределительный Центр)</option>
-                                <option value="Склад №1" class="bg-gray-900">Склад №1 (Северный)</option>
-                                <option value="Склад №2" class="bg-gray-900">Склад №2 (Южный)</option>
-                                <option value="Центральный терминал" class="bg-gray-900">Центральный терминал</option>
+                                <option value="ЕРЦ" class="bg-gray-100 dark:bg-gray-900">ЕРЦ (Единый Распределительный Центр)</option>
+                                <option value="Склад №1" class="bg-gray-100 dark:bg-gray-900">Склад №1 (Северный)</option>
+                                <option value="Склад №2" class="bg-gray-100 dark:bg-gray-900">Склад №2 (Южный)</option>
+                                <option value="Центральный терминал" class="bg-gray-100 dark:bg-gray-900">Центральный терминал</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-300 mb-1">Кол-во человек</label>
+                            <label id="lbl-req-headcount" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Кол-во человек</label>
                             <input type="number" id="req-headcount" min="1" max="100" value="6" required class="w-full px-3.5 py-2.5 rounded-xl glass-input text-sm">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-300 mb-1">Дата работы</label>
+                            <label id="lbl-req-date" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Дата работы</label>
                             <input type="date" id="req-date" required class="w-full px-3.5 py-2.5 rounded-xl glass-input text-sm">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-300 mb-1">Рабочее время</label>
+                            <label id="lbl-req-time" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Рабочее время</label>
                             <div class="flex items-center space-x-2">
                                 <input type="time" id="req-time-start" value="08:00" required class="w-full px-2 py-2.5 rounded-xl glass-input text-sm text-center">
-                                <span class="text-gray-500">-</span>
+                                <span class="text-gray-400">-</span>
                                 <input type="time" id="req-time-end" value="17:00" required class="w-full px-2 py-2.5 rounded-xl glass-input text-sm text-center">
                             </div>
                         </div>
 
                         <div class="md:col-span-2 lg:col-span-4 flex justify-end mt-2">
-                            <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center space-x-2">
+                            <button type="submit" id="btn-submit-req" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center space-x-2">
                                 <i class="fa-solid fa-paper-plane text-xs"></i>
-                                <span>Отправить на подтверждение менеджеру</span>
+                                <span id="txt-btn-send-req">Отправить заявку</span>
                             </button>
                         </div>
                     </form>
@@ -288,28 +334,28 @@
 
                 <!-- REQUESTS LIST CONTAINER -->
                 <div class="glass-panel p-6 rounded-3xl">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
                         <div>
-                            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-                                <span>Список заявок</span>
-                                <span id="requests-count-badge" class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">0</span>
+                            <h3 class="text-lg font-bold flex items-center space-x-2">
+                                <span id="txt-requests-list-title">Список заявок</span>
+                                <span id="requests-count-badge" class="text-xs bg-blue-500/20 text-blue-500 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">0</span>
                             </h3>
-                            <p class="text-xs text-gray-400 mt-0.5">Все изменения сразу отображаются у остальных пользователей</p>
+                            <p id="txt-requests-subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Все изменения сразу отображаются у остальных пользователей</p>
                         </div>
 
                         <!-- Status Filter -->
                         <div class="flex items-center space-x-2">
-                            <span class="text-xs text-gray-400">Фильтр:</span>
+                            <span id="txt-filter-lbl" class="text-xs text-gray-500 dark:text-gray-400">Фильтр:</span>
                             <select id="requests-filter" onchange="app.renderRequests()" class="px-3 py-1.5 rounded-xl glass-input text-xs">
-                                <option value="all" class="bg-gray-900">Все заявки</option>
-                                <option value="pending" class="bg-gray-900">На подтверждении</option>
-                                <option value="approved" class="bg-gray-900">Подтверждено</option>
-                                <option value="modified" class="bg-gray-900">Изменено менеджером</option>
+                                <option value="all" id="opt-filter-all" class="bg-gray-100 dark:bg-gray-900">Все заявки</option>
+                                <option value="pending" id="opt-filter-pending" class="bg-gray-100 dark:bg-gray-900">На подтверждении</option>
+                                <option value="approved" id="opt-filter-approved" class="bg-gray-100 dark:bg-gray-900">Подтверждено</option>
+                                <option value="modified" id="opt-filter-modified" class="bg-gray-100 dark:bg-gray-900">Изменено менеджером</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Dynamic Requests Grid/Cards -->
+                    <!-- Dynamic Requests Grid -->
                     <div id="requests-list-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <!-- Rendered dynamically -->
                     </div>
@@ -317,59 +363,58 @@
 
             </div>
 
-            <!-- TAB 2: ACCESS CONTROL / WHITELIST & BLACKLIST (MANAGER ONLY) -->
+            <!-- TAB 2: ACCESS CONTROL (MANAGER ONLY) -->
             <div id="tab-access" class="space-y-6 hidden">
-
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     <!-- ADD NEW PHONE FORM -->
                     <div class="glass-panel p-6 rounded-3xl h-fit">
-                        <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-800">
-                            <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center">
+                        <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+                            <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-500 dark:text-blue-400 flex items-center justify-center">
                                 <i class="fa-solid fa-user-plus text-sm"></i>
                             </div>
-                            <h3 class="text-base font-bold text-white">Управление доступом</h3>
+                            <h3 id="txt-access-mgmt-title" class="text-base font-bold">Управление доступом</h3>
                         </div>
 
                         <form onsubmit="app.addPhoneToList(event)" class="space-y-4">
                             <div>
-                                <label class="block text-xs font-medium text-gray-300 mb-1">Номер телефона аутсорса</label>
-                                <input type="tel" id="access-phone-input" placeholder="06654452678" required class="w-full px-3.5 py-2.5 rounded-xl glass-input text-sm">
+                                <label id="lbl-access-phone" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Номер телефона аутсорса</label>
+                                <input type="tel" id="access-phone-input" placeholder="+380665445267 или 0665445267" required class="w-full px-3.5 py-2.5 rounded-xl glass-input text-sm">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-300 mb-1">Примечание / ФИО</label>
+                                <label id="lbl-access-note" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Примечание / ФИО</label>
                                 <input type="text" id="access-note-input" placeholder="Санжакова Марина" class="w-full px-3.5 py-2.5 rounded-xl glass-input text-sm">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-300 mb-1">Целевой список</label>
+                                <label id="lbl-access-list-type" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Целевой список</label>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <label class="flex items-center justify-center p-2.5 rounded-xl glass-input cursor-pointer hover:bg-gray-800 transition">
-                                        <input type="radio" name="target-list" value="white" checked class="text-green-500 focus:ring-0 mr-2">
-                                        <span class="text-xs text-green-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Белый</span>
+                                    <label class="flex items-center justify-center p-2.5 rounded-xl glass-input cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                                        <input type="radio" name="target-list" value="white" checked class="text-green-500 mr-2">
+                                        <span id="txt-opt-white" class="text-xs text-green-500 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Белый</span>
                                     </label>
-                                    <label class="flex items-center justify-center p-2.5 rounded-xl glass-input cursor-pointer hover:bg-gray-800 transition">
-                                        <input type="radio" name="target-list" value="black" class="text-red-500 focus:ring-0 mr-2">
-                                        <span class="text-xs text-red-400 font-semibold"><i class="fa-solid fa-ban mr-1"></i> Черный</span>
+                                    <label class="flex items-center justify-center p-2.5 rounded-xl glass-input cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+                                        <input type="radio" name="target-list" value="black" class="text-red-500 mr-2">
+                                        <span id="txt-opt-black" class="text-xs text-red-500 font-semibold"><i class="fa-solid fa-ban mr-1"></i> Черный</span>
                                     </label>
                                 </div>
                             </div>
 
-                            <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-blue-600/30">
+                            <button type="submit" id="btn-save-access" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-blue-600/30">
                                 Сохранить в список
                             </button>
                         </form>
                     </div>
 
-                    <!-- WHITELIST TABLE / CARDS -->
+                    <!-- WHITELIST TABLE -->
                     <div class="glass-panel p-6 rounded-3xl">
-                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-800">
+                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                             <div class="flex items-center space-x-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-                                <h3 class="text-base font-bold text-white">Белый список</h3>
+                                <h3 id="txt-whitelist-title" class="text-base font-bold">Белый список</h3>
                             </div>
-                            <span id="whitelist-count" class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full border border-green-500/30">0</span>
+                            <span id="whitelist-count" class="text-xs bg-green-500/20 text-green-500 dark:text-green-400 px-2 py-0.5 rounded-full border border-green-500/30">0</span>
                         </div>
 
                         <div id="whitelist-container" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
@@ -377,14 +422,14 @@
                         </div>
                     </div>
 
-                    <!-- BLACKLIST TABLE / CARDS -->
+                    <!-- BLACKLIST TABLE -->
                     <div class="glass-panel p-6 rounded-3xl">
-                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-800">
+                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                             <div class="flex items-center space-x-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                                <h3 class="text-base font-bold text-white">Черный список</h3>
+                                <h3 id="txt-blacklist-title" class="text-base font-bold">Черный список</h3>
                             </div>
-                            <span id="blacklist-count" class="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full border border-red-500/30">0</span>
+                            <span id="blacklist-count" class="text-xs bg-red-500/20 text-red-500 dark:text-red-400 px-2 py-0.5 rounded-full border border-red-500/30">0</span>
                         </div>
 
                         <div id="blacklist-container" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
@@ -393,24 +438,22 @@
                     </div>
 
                 </div>
-
             </div>
 
         </div>
-
     </main>
 
     <!-- Footer -->
-    <footer class="glass-panel border-t border-gray-800 py-4 mt-8">
+    <footer class="glass-panel border-t py-4 mt-8">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2">
             <div>WMS Outsource Management System &copy; 2026</div>
             <div class="flex items-center space-x-4">
-                <span>Коды входа: Менеджер (<code class="text-blue-400">000</code>), Админ (<code class="text-blue-400">111</code>)</span>
+                <span id="txt-footer-codes">Коды входа: Менеджер (<code class="text-blue-500">000</code>), Админ (<code class="text-blue-500">111</code>)</span>
             </div>
         </div>
     </footer>
 
-    <!-- ================= MANAGER EDIT REQUEST MODAL ================= -->
+    <!-- MANAGER EDIT REQUEST MODAL -->
     <div id="edit-request-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
         <div class="glass-panel max-w-lg w-full p-6 rounded-3xl shadow-2xl border border-gray-700 relative animate-in fade-in zoom-in duration-200">
             <button onclick="app.closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2">
@@ -418,11 +461,11 @@
             </button>
 
             <div class="flex items-center space-x-3 mb-4">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 dark:text-amber-400 flex items-center justify-center text-xl">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-white">Редактирование заявки</h3>
+                    <h3 id="txt-modal-edit-title" class="text-lg font-bold">Редактирование заявки</h3>
                     <p class="text-xs text-gray-400" id="modal-warehouse-title">Склад: ЕРЦ</p>
                 </div>
             </div>
@@ -430,39 +473,39 @@
             <form onsubmit="app.saveRequestModification(event)" class="space-y-4">
                 <input type="hidden" id="modal-request-id">
 
-                <div class="grid grid-cols-2 gap-3 bg-gray-900/60 p-3 rounded-2xl border border-gray-800">
+                <div class="grid grid-cols-2 gap-3 glass-card p-3 rounded-2xl border">
                     <div>
-                        <span class="text-[11px] text-gray-400 block">Исходное кол-во:</span>
-                        <span id="modal-original-headcount" class="text-sm font-bold text-white">6 чел.</span>
+                        <span id="txt-modal-orig-lbl" class="text-[11px] text-gray-400 block">Исходное кол-во:</span>
+                        <span id="modal-original-headcount" class="text-sm font-bold">6 чел.</span>
                     </div>
                     <div>
-                        <span class="text-[11px] text-gray-400 block">Время & Дата:</span>
-                        <span id="modal-date-time" class="text-xs font-semibold text-gray-300">--</span>
+                        <span id="txt-modal-date-lbl" class="text-[11px] text-gray-400 block">Время & Дата:</span>
+                        <span id="modal-date-time" class="text-xs font-semibold">--</span>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-gray-300 mb-1">Новое количество человек</label>
+                    <label id="lbl-modal-new-headcount" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Новое количество человек</label>
                     <input type="number" id="modal-headcount-input" min="1" max="100" required onchange="app.handleHeadcountChange()" onkeyup="app.handleHeadcountChange()" class="w-full px-3.5 py-2.5 rounded-xl glass-input text-sm">
                 </div>
 
                 <!-- MANDATORY EXPLANATION FIELD IF HEADCOUNT REDUCED -->
                 <div id="modal-removed-reason-wrapper" class="hidden space-y-1.5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-                    <label class="block text-xs font-bold text-amber-400 flex items-center justify-between">
-                        <span>Укажите кого убрали (ФИО, Телефон):</span>
+                    <label class="block text-xs font-bold text-amber-500 dark:text-amber-400 flex items-center justify-between">
+                        <span id="txt-modal-removed-lbl">Укажите кого убрали (ФИО, Телефон):</span>
                         <span id="modal-removed-count-badge" class="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full">Убрано: 2 чел.</span>
                     </label>
-                    <p class="text-[11px] text-gray-300">
-                        Обязательно допишите вручную данные снятых людей (например: <i>Санжакова Марина 06654452678</i>)
+                    <p id="txt-modal-removed-desc" class="text-[11px] text-gray-500 dark:text-gray-300">
+                        Обязательно допишите вручную данные снятых людей (например: <i>Санжакова Марина +380665445267</i>)
                     </p>
-                    <textarea id="modal-removed-info" rows="3" placeholder="Санжакова Марина 06654452678 - снята по семейным обстоятельствам" class="w-full p-3 rounded-xl glass-input text-sm"></textarea>
+                    <textarea id="modal-removed-info" rows="3" placeholder="Санжакова Марина 0665445267 - снята по семейным обстоятельствам" class="w-full p-3 rounded-xl glass-input text-sm"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="app.closeModal()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl text-xs font-semibold transition">
+                    <button type="button" onclick="app.closeModal()" id="btn-modal-cancel" class="px-4 py-2 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-semibold transition">
                         Отмена
                     </button>
-                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-blue-600/30">
+                    <button type="submit" id="btn-modal-save" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-blue-600/30">
                         Подтвердить изменения
                     </button>
                 </div>
@@ -472,15 +515,190 @@
 
     <!-- MAIN APP JAVASCRIPT LOGIC -->
     <script>
-        // Default Mock State
+        // TRANSLATIONS DICTIONARY
+        const TRANSLATIONS = {
+            ru: {
+                headerSub: "Управление заявками и доступом",
+                authTitle: "Авторизация / Регистрация",
+                authSub: "Выберите вашу роль для входа в систему",
+                authNameLbl: "ФИО / Имя пользователя",
+                authPhoneLbl: "Номер телефона",
+                authPhoneHint: "Проверяется по белому/черному списку",
+                authCodeLbl: "Код доступа",
+                authCodeHint: "Менеджер: 000 | Админ: 111",
+                authSubmit: "Войти / Зарегистрироваться",
+                controlPanel: "Панель управления:",
+                syncStatus: "Синхронизация в реальном времени активна",
+                navRequests: "Заявки",
+                navAccess: "Белый / Черный список",
+                createReqTitle: "Создание новой заявки на людей",
+                adminTag: "Панель Администратора",
+                reqWarehouseLbl: "Склад / Объект",
+                reqHeadcountLbl: "Кол-во человек",
+                reqDateLbl: "Дата работы",
+                reqTimeLbl: "Рабочее время",
+                btnSendReq: "Отправить заявку",
+                requestsListTitle: "Список заявок",
+                requestsSubtitle: "Все изменения сразу отображаются у остальных пользователей",
+                filterLbl: "Фильтр:",
+                filterAll: "Все заявки",
+                filterPending: "На подтверждении",
+                filterApproved: "Подтверждено",
+                filterModified: "Изменено менеджером",
+                accessMgmtTitle: "Управление доступом",
+                accessPhoneLbl: "Номер телефона аутсорса",
+                accessNoteLbl: "Примечание / ФИО",
+                accessListTypeLbl: "Целевой список",
+                optWhite: "Белый",
+                optBlack: "Черный",
+                btnSaveAccess: "Сохранить в список",
+                whitelistTitle: "Белый список",
+                blacklistTitle: "Черный список",
+                footerCodes: "Коды входа: Менеджер (000), Админ (111)",
+                modalEditTitle: "Редактирование заявки",
+                modalOrigLbl: "Исходное кол-во:",
+                modalDateLbl: "Время & Дата:",
+                modalNewHeadcountLbl: "Новое количество человек",
+                modalRemovedLbl: "Укажите кого убрали (ФИО, Телефон):",
+                modalRemovedDesc: "Обязательно допишите данные снятых людей (например: Санжакова Марина 06654452678)",
+                btnModalCancel: "Отмена",
+                btnModalSave: "Подтвердить изменения",
+                statusPending: "На подтверждении",
+                statusApproved: "Подтверждена",
+                statusModified: "Изменена менеджером",
+                roleAdmin: "Администратор",
+                roleManager: "Менеджер",
+                roleOutsource: "Аутсорс Работник",
+                created: "Создал",
+                people: "чел.",
+                removed: "Убраны",
+                wasReduced: "Было сокращено"
+            },
+            uk: {
+                headerSub: "Управління заявками та доступом",
+                authTitle: "Авторизація / Реєстрація",
+                authSub: "Оберіть вашу роль для входу в систему",
+                authNameLbl: "ПІБ / Ім'я користувача",
+                authPhoneLbl: "Номер телефону",
+                authPhoneHint: "Перевіряється за білим/чорним списком",
+                authCodeLbl: "Код доступу",
+                authCodeHint: "Менеджер: 000 | Адмін: 111",
+                authSubmit: "Увійти / Зареєструватися",
+                controlPanel: "Панель управління:",
+                syncStatus: "Синхронізація у реальному часі активна",
+                navRequests: "Заявки",
+                navAccess: "Білий / Чорний список",
+                createReqTitle: "Створення нової заявки на людей",
+                adminTag: "Панель Адміністратора",
+                reqWarehouseLbl: "Склад / Об'єкт",
+                reqHeadcountLbl: "Кількість людей",
+                reqDateLbl: "Дата роботи",
+                reqTimeLbl: "Робочий час",
+                btnSendReq: "Надіслати заявку",
+                requestsListTitle: "Список заявок",
+                requestsSubtitle: "Усі зміни одразу відображаються у інших користувачів",
+                filterLbl: "Фільтр:",
+                filterAll: "Усі заявки",
+                filterPending: "На підтвердженні",
+                filterApproved: "Підтверджено",
+                filterModified: "Змінено менеджером",
+                accessMgmtTitle: "Управління доступом",
+                accessPhoneLbl: "Номер телефону аутсорсу",
+                accessNoteLbl: "Примітка / ПІБ",
+                accessListTypeLbl: "Цільовий список",
+                optWhite: "Білий",
+                optBlack: "Чорний",
+                btnSaveAccess: "Зберегти до списку",
+                whitelistTitle: "Білий список",
+                blacklistTitle: "Чорний список",
+                footerCodes: "Коди входу: Менеджер (000), Адмін (111)",
+                modalEditTitle: "Редагування заявки",
+                modalOrigLbl: "Початкова к-сть:",
+                modalDateLbl: "Час & Дата:",
+                modalNewHeadcountLbl: "Нова кількість людей",
+                modalRemovedLbl: "Вкажіть кого прибрали (ПІБ, Телефон):",
+                modalRemovedDesc: "Обов'язково допишіть дані знятих людей (наприклад: Санжакова Марина 06654452678)",
+                btnModalCancel: "Скасувати",
+                btnModalSave: "Підтвердити зміни",
+                statusPending: "На підтвердженні",
+                statusApproved: "Підтверджено",
+                statusModified: "Змінено менеджером",
+                roleAdmin: "Адміністратор",
+                roleManager: "Менеджер",
+                roleOutsource: "Аутсорс Працівник",
+                created: "Створив",
+                people: "ос.",
+                removed: "Прибрано",
+                wasReduced: "Було скорочено"
+            },
+            en: {
+                headerSub: "Requests & Access Management Portal",
+                authTitle: "Sign In / Register",
+                authSub: "Choose your role to log in",
+                authNameLbl: "Full Name / Username",
+                authPhoneLbl: "Phone Number",
+                authPhoneHint: "Validated against Whitelist / Blacklist",
+                authCodeLbl: "Access Code",
+                authCodeHint: "Manager: 000 | Admin: 111",
+                authSubmit: "Sign In / Register",
+                controlPanel: "Control Panel:",
+                syncStatus: "Real-time sync active",
+                navRequests: "Requests",
+                navAccess: "White / Black List",
+                createReqTitle: "Create Staffing Request",
+                adminTag: "Admin Panel",
+                reqWarehouseLbl: "Warehouse / Facility",
+                reqHeadcountLbl: "Headcount Needed",
+                reqDateLbl: "Work Date",
+                reqTimeLbl: "Shift Hours",
+                btnSendReq: "Submit Request",
+                requestsListTitle: "Requests List",
+                requestsSubtitle: "All updates reflect instantly across sessions",
+                filterLbl: "Filter:",
+                filterAll: "All Requests",
+                filterPending: "Pending Approval",
+                filterApproved: "Approved",
+                filterModified: "Manager Modified",
+                accessMgmtTitle: "Access Control",
+                accessPhoneLbl: "Outsource Phone Number",
+                accessNoteLbl: "Note / Staff Name",
+                accessListTypeLbl: "Target List",
+                optWhite: "Whitelist",
+                optBlack: "Blacklist",
+                btnSaveAccess: "Save to List",
+                whitelistTitle: "Whitelist",
+                blacklistTitle: "Blacklist",
+                footerCodes: "Access Codes: Manager (000), Admin (111)",
+                modalEditTitle: "Edit Request",
+                modalOrigLbl: "Original Count:",
+                modalDateLbl: "Time & Date:",
+                modalNewHeadcountLbl: "New Headcount",
+                modalRemovedLbl: "Specify removed staff (Name, Phone):",
+                modalRemovedDesc: "Please list details of removed personnel (e.g. Marina 06654452678)",
+                btnModalCancel: "Cancel",
+                btnModalSave: "Confirm Changes",
+                statusPending: "Pending Approval",
+                statusApproved: "Approved",
+                statusModified: "Modified by Manager",
+                roleAdmin: "Administrator",
+                roleManager: "Manager",
+                roleOutsource: "Outsource Staff",
+                created: "Created by",
+                people: "staff",
+                removed: "Removed",
+                wasReduced: "Reduced from"
+            }
+        };
+
+        // DEFAULT INITIAL MOCK DATA
         const DEFAULT_WHITELIST = [
-            { phone: "06654452678", name: "Санжакова Марина" },
-            { phone: "0971234567", name: "Иванов Алексей" },
-            { phone: "0509876543", name: "Петренко Сергей" }
+            { phone: "380665445267", name: "Санжакова Марина" },
+            { phone: "380971234567", name: "Иванов Алексей" },
+            { phone: "380509876543", name: "Петренко Сергей" }
         ];
 
         const DEFAULT_BLACKLIST = [
-            { phone: "0631112233", name: "Сидоров Олег (Нарушение дисциплины)" }
+            { phone: "380631112233", name: "Сидоров Олег (Нарушение)" }
         ];
 
         const DEFAULT_REQUESTS = [
@@ -489,37 +707,40 @@
                 warehouse: "ЕРЦ",
                 originalHeadcount: 6,
                 currentHeadcount: 4,
-                removedInfo: "Санжакова Марина 06654452678, Петренко Сергей 0509876543",
+                removedInfo: "Санжакова Марина +380665445267, Петренко Сергей +380509876543",
                 date: new Date().toISOString().split('T')[0],
                 timeStart: "08:00",
                 timeEnd: "17:00",
-                status: "modified", // pending, approved, modified
+                status: "modified",
                 createdBy: "Администратор",
                 modifiedBy: "Менеджер (000)",
-                createdAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-            },
-            {
-                id: "req-2",
-                warehouse: "Склад №1",
-                originalHeadcount: 10,
-                currentHeadcount: 10,
-                removedInfo: "",
-                date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-                timeStart: "09:00",
-                timeEnd: "18:00",
-                status: "pending",
-                createdBy: "Администратор",
-                modifiedBy: null,
                 createdAt: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             }
         ];
 
+        // Phone normalization helper function
+        function normalizePhone(phoneStr) {
+            if (!phoneStr) return '';
+            // Remove non-digit characters
+            let digits = phoneStr.replace(/\D/g, '');
+            // If phone starts with local '0' (e.g. 0665445267 - 10 digits), convert to 380...
+            if (digits.length === 10 && digits.startsWith('0')) {
+                digits = '38' + digits;
+            }
+            return digits;
+        }
+
         class WMSApp {
             constructor() {
-                this.currentUser = null; // { name, role, phone }
-                this.selectedAuthRole = 'outsource'; // outsource, manager, admin
-                
-                // Initialize State from LocalStorage or defaults
+                this.currentUser = null;
+                this.selectedAuthRole = 'outsource';
+                this.currentLang = localStorage.getItem('wms_lang') || 'ru';
+                this.currentTheme = localStorage.getItem('wms_theme') || 'dark';
+
+                // Real-time channel across browser tabs
+                this.syncChannel = new BroadcastChannel('wms_realtime_channel');
+
+                // Load initial state
                 this.whitelist = JSON.parse(localStorage.getItem('wms_whitelist')) || DEFAULT_WHITELIST;
                 this.blacklist = JSON.parse(localStorage.getItem('wms_blacklist')) || DEFAULT_BLACKLIST;
                 this.requests = JSON.parse(localStorage.getItem('wms_requests')) || DEFAULT_REQUESTS;
@@ -528,13 +749,21 @@
             }
 
             initApp() {
+                // Apply theme & language
+                this.applyTheme(this.currentTheme);
+                document.getElementById('lang-selector').value = this.currentLang;
+                this.applyLanguageTranslations();
+
                 this.setAuthRole('outsource');
                 
-                // Set default date picker to today
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('req-date').value = today;
 
-                // Sync across open browser tabs automatically
+                // Sync across open browser tabs via BroadcastChannel and Storage Events
+                this.syncChannel.onmessage = (event) => {
+                    this.handleSyncData(event.data);
+                };
+
                 window.addEventListener('storage', (e) => {
                     if (e.key === 'wms_requests') this.requests = JSON.parse(e.newValue || '[]');
                     if (e.key === 'wms_whitelist') this.whitelist = JSON.parse(e.newValue || '[]');
@@ -543,11 +772,29 @@
                     this.renderAccessLists();
                 });
 
-                // Auto check session if exists
+                // Auto check session
                 const savedUser = sessionStorage.getItem('wms_user');
                 if (savedUser) {
                     this.currentUser = JSON.parse(savedUser);
+                    // Load user specific saved theme/lang if available
+                    if (this.currentUser.theme) this.applyTheme(this.currentUser.theme);
+                    if (this.currentUser.lang) {
+                        this.currentLang = this.currentUser.lang;
+                        document.getElementById('lang-selector').value = this.currentLang;
+                        this.applyLanguageTranslations();
+                    }
                     this.onLoginSuccess();
+                }
+            }
+
+            handleSyncData(data) {
+                if (!data) return;
+                if (data.type === 'SYNC_ALL') {
+                    this.requests = data.requests;
+                    this.whitelist = data.whitelist;
+                    this.blacklist = data.blacklist;
+                    this.renderRequests();
+                    this.renderAccessLists();
                 }
             }
 
@@ -556,22 +803,120 @@
                 localStorage.setItem('wms_blacklist', JSON.stringify(this.blacklist));
                 localStorage.setItem('wms_requests', JSON.stringify(this.requests));
                 
-                // Broadcast change event locally to ensure instant view updates
+                // Broadcast to other tabs
+                this.syncChannel.postMessage({
+                    type: 'SYNC_ALL',
+                    requests: this.requests,
+                    whitelist: this.whitelist,
+                    blacklist: this.blacklist
+                });
+
                 this.renderRequests();
                 this.renderAccessLists();
             }
 
-            // Role Switcher for Auth Form
+            // Theme Management
+            toggleTheme() {
+                const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+                this.applyTheme(newTheme);
+            }
+
+            applyTheme(theme) {
+                this.currentTheme = theme;
+                localStorage.setItem('wms_theme', theme);
+
+                const icon = document.getElementById('theme-icon');
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    icon.className = "fa-solid fa-sun text-amber-400 text-sm";
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    icon.className = "fa-solid fa-moon text-indigo-600 text-sm";
+                }
+
+                if (this.currentUser) {
+                    this.currentUser.theme = theme;
+                    sessionStorage.setItem('wms_user', JSON.stringify(this.currentUser));
+                }
+            }
+
+            // Language Translation Management
+            setLanguage(lang) {
+                this.currentLang = lang;
+                localStorage.setItem('wms_lang', lang);
+                if (this.currentUser) {
+                    this.currentUser.lang = lang;
+                    sessionStorage.setItem('wms_user', JSON.stringify(this.currentUser));
+                }
+                this.applyLanguageTranslations();
+                this.renderRequests();
+                this.renderAccessLists();
+                if (this.currentUser) this.updateUserRoleBadge();
+            }
+
+            applyLanguageTranslations() {
+                const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.ru;
+                
+                const setTxt = (id, text) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = text;
+                };
+
+                setTxt('txt-header-sub', t.headerSub);
+                setTxt('txt-auth-title', t.authTitle);
+                setTxt('txt-auth-subtitle', t.authSub);
+                setTxt('lbl-auth-name', t.authNameLbl);
+                setTxt('lbl-auth-phone', t.authPhoneLbl);
+                setTxt('txt-phone-hint', t.authPhoneHint);
+                setTxt('lbl-auth-code', t.authCodeLbl);
+                setTxt('txt-control-panel', t.controlPanel);
+                setTxt('txt-sync-status', t.syncStatus);
+                setTxt('txt-nav-requests', t.navRequests);
+                setTxt('txt-nav-access', t.navAccess);
+                setTxt('txt-create-req-title', t.createReqTitle);
+                setTxt('txt-admin-tag', t.adminTag);
+                setTxt('lbl-req-warehouse', t.reqWarehouseLbl);
+                setTxt('lbl-req-headcount', t.reqHeadcountLbl);
+                setTxt('lbl-req-date', t.reqDateLbl);
+                setTxt('lbl-req-time', t.reqTimeLbl);
+                setTxt('txt-btn-send-req', t.btnSendReq);
+                setTxt('txt-requests-list-title', t.requestsListTitle);
+                setTxt('txt-requests-subtitle', t.requestsSubtitle);
+                setTxt('txt-filter-lbl', t.filterLbl);
+                setTxt('opt-filter-all', t.filterAll);
+                setTxt('opt-filter-pending', t.filterPending);
+                setTxt('opt-filter-approved', t.filterApproved);
+                setTxt('opt-filter-modified', t.filterModified);
+                setTxt('txt-access-mgmt-title', t.accessMgmtTitle);
+                setTxt('lbl-access-phone', t.accessPhoneLbl);
+                setTxt('lbl-access-note', t.accessNoteLbl);
+                setTxt('lbl-access-list-type', t.accessListTypeLbl);
+                setTxt('txt-opt-white', t.optWhite);
+                setTxt('txt-opt-black', t.optBlack);
+                setTxt('btn-save-access', t.btnSaveAccess);
+                setTxt('txt-whitelist-title', t.whitelistTitle);
+                setTxt('txt-blacklist-title', t.blacklistTitle);
+                setTxt('txt-modal-edit-title', t.modalEditTitle);
+                setTxt('txt-modal-orig-lbl', t.modalOrigLbl);
+                setTxt('txt-modal-date-lbl', t.modalDateLbl);
+                setTxt('lbl-modal-new-headcount', t.modalNewHeadcountLbl);
+                setTxt('txt-modal-removed-lbl', t.modalRemovedLbl);
+                setTxt('txt-modal-removed-desc', t.modalRemovedDesc);
+                setTxt('btn-modal-cancel', t.btnModalCancel);
+                setTxt('btn-modal-save', t.btnModalSave);
+            }
+
+            // Auth Role Selection
             setAuthRole(role) {
                 this.selectedAuthRole = role;
-                
-                // UI Tab styles
                 ['outsource', 'manager', 'admin'].forEach(r => {
                     const btn = document.getElementById(`role-tab-${r}`);
-                    if (r === role) {
-                        btn.className = "py-2 text-xs font-semibold rounded-xl transition-all duration-200 bg-blue-600 text-white shadow-md shadow-blue-600/30";
-                    } else {
-                        btn.className = "py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-400 hover:text-white";
+                    if (btn) {
+                        if (r === role) {
+                            btn.className = "py-2 text-xs font-semibold rounded-xl transition-all duration-200 bg-blue-600 text-white shadow-md shadow-blue-600/30";
+                        } else {
+                            btn.className = "py-2 text-xs font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white";
+                        }
                     }
                 });
 
@@ -582,71 +927,73 @@
                 const codeInput = document.getElementById('auth-code');
 
                 if (role === 'outsource') {
-                    phoneWrapper.classList.remove('hidden');
-                    phoneStar.classList.remove('hidden');
-                    phoneInput.required = true;
-                    codeWrapper.classList.add('hidden');
-                    codeInput.required = false;
-                } else if (role === 'manager' || role === 'admin') {
-                    // For manager and admin, phone is OPTIONAL, code is REQUIRED
-                    phoneWrapper.classList.remove('hidden');
-                    phoneStar.classList.add('hidden');
-                    phoneInput.required = false;
-                    codeWrapper.classList.remove('hidden');
-                    codeInput.required = true;
+                    if (phoneWrapper) phoneWrapper.classList.remove('hidden');
+                    if (phoneStar) phoneStar.classList.remove('hidden');
+                    if (phoneInput) phoneInput.required = true;
+                    if (codeWrapper) codeWrapper.classList.add('hidden');
+                    if (codeInput) codeInput.required = false;
+                } else {
+                    if (phoneWrapper) phoneWrapper.classList.remove('hidden');
+                    if (phoneStar) phoneStar.classList.add('hidden');
+                    if (phoneInput) phoneInput.required = false;
+                    if (codeWrapper) codeWrapper.classList.remove('hidden');
+                    if (codeInput) codeInput.required = true;
                 }
             }
 
-            // Handle Registration / Login submission
+            // Auth Registration / Login Handling
             handleAuthSubmit(e) {
                 e.preventDefault();
-
                 const name = document.getElementById('auth-name').value.trim();
-                const phone = document.getElementById('auth-phone').value.trim().replace(/[\s\-\(\)]/g, '');
+                const rawPhone = document.getElementById('auth-phone').value.trim();
+                const normalizedPhone = normalizePhone(rawPhone);
                 const code = document.getElementById('auth-code').value.trim();
 
                 if (this.selectedAuthRole === 'outsource') {
-                    // OUTSOURCE REGISTRATION LOGIC: Check White / Black List
-                    if (!phone) {
-                        this.showToast('Укажите номер телефона для регистрации аутсорса!', 'error');
+                    if (!normalizedPhone || normalizedPhone.length < 9) {
+                        this.showToast('Укажите корректный номер телефона!', 'error');
                         return;
                     }
 
-                    // 1. Check Blacklist first
-                    const isBlacklisted = this.blacklist.some(item => item.phone === phone);
+                    // Flexible Whitelist / Blacklist validation matching normalized digits or suffix
+                    const checkPhoneMatch = (stored) => {
+                        const target = normalizePhone(stored.phone);
+                        if (!target || !normalizedPhone) return false;
+                        return target === normalizedPhone || 
+                               target.endsWith(normalizedPhone) || 
+                               normalizedPhone.endsWith(target);
+                    };
+
+                    const isBlacklisted = this.blacklist.some(checkPhoneMatch);
                     if (isBlacklisted) {
-                        this.showToast('Регистрация заблокирована: данный номер находится в черном списке!', 'error');
+                        this.showToast('Регистрация заблокирована: номер в черном списке!', 'error');
                         return;
                     }
 
-                    // 2. Check Whitelist
-                    const isWhitelisted = this.whitelist.some(item => item.phone === phone);
+                    const isWhitelisted = this.whitelist.some(checkPhoneMatch);
                     if (!isWhitelisted) {
-                        this.showToast('Ошибка доступа: номер телефона отсутствует в белом списке!', 'error');
+                        this.showToast('Ошибка доступа: номер отсутсвует в белом списке!', 'error');
                         return;
                     }
 
-                    // Whitelisted -> Registration Allowed
-                    this.currentUser = { name, role: 'outsource', phone };
+                    this.currentUser = { name, role: 'outsource', phone: normalizedPhone, theme: this.currentTheme, lang: this.currentLang };
                     this.showToast(`Добро пожаловать, ${name}! Доступ разрешен.`, 'success');
 
                 } else if (this.selectedAuthRole === 'manager') {
-                    // MANAGER LOGIN: Code must be 000
                     if (code !== '000') {
-                        this.showToast('Неверный код доступа для Менеджера! (Ожидается: 000)', 'error');
+                        this.showToast('Неверный код доступа для Менеджера! (Код: 000)', 'error');
                         return;
                     }
-                    this.currentUser = { name, role: 'manager', phone: phone || 'Не указан' };
-                    this.showToast('Успешный вход под ролью Менеджера!', 'success');
+                    this.currentUser = { name, role: 'manager', phone: normalizedPhone || 'N/A', theme: this.currentTheme, lang: this.currentLang };
+                    this.showToast('Вход под ролью Менеджера выполнен!', 'success');
 
                 } else if (this.selectedAuthRole === 'admin') {
-                    // ADMIN LOGIN: Code must be 111
                     if (code !== '111') {
-                        this.showToast('Неверный код доступа для Администратора! (Ожидается: 111)', 'error');
+                        this.showToast('Неверный код доступа для Администратора! (Код: 111)', 'error');
                         return;
                     }
-                    this.currentUser = { name, role: 'admin', phone: phone || 'Не указан' };
-                    this.showToast('Успешный вход под ролью Администратора!', 'success');
+                    this.currentUser = { name, role: 'admin', phone: normalizedPhone || 'N/A', theme: this.currentTheme, lang: this.currentLang };
+                    this.showToast('Вход под ролью Администратора выполнен!', 'success');
                 }
 
                 sessionStorage.setItem('wms_user', JSON.stringify(this.currentUser));
@@ -658,21 +1005,11 @@
                 document.getElementById('dashboard-container').classList.remove('hidden');
                 document.getElementById('user-nav-section').classList.remove('hidden');
 
-                // Header Badges
                 document.getElementById('user-display-name').textContent = this.currentUser.name;
-                const rolePill = document.getElementById('active-role-pill');
-                const userRoleBadge = document.getElementById('user-role-badge');
-                
-                let roleTitle = '';
-                if (this.currentUser.role === 'admin') roleTitle = 'Администратор';
-                else if (this.currentUser.role === 'manager') roleTitle = 'Менеджер';
-                else roleTitle = 'Аутсорс Работник';
-
-                rolePill.textContent = roleTitle;
-                userRoleBadge.textContent = roleTitle;
                 document.getElementById('user-avatar').textContent = this.currentUser.name.charAt(0).toUpperCase();
+                
+                this.updateUserRoleBadge();
 
-                // Visibility controls depending on role
                 const adminCreateCard = document.getElementById('admin-create-request-card');
                 const navAccessBtn = document.getElementById('nav-btn-access');
 
@@ -683,7 +1020,6 @@
                     adminCreateCard.classList.add('hidden');
                     navAccessBtn.classList.remove('hidden');
                 } else {
-                    // Outsource
                     adminCreateCard.classList.add('hidden');
                     navAccessBtn.classList.add('hidden');
                 }
@@ -693,13 +1029,26 @@
                 this.renderAccessLists();
             }
 
+            updateUserRoleBadge() {
+                const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.ru;
+                const rolePill = document.getElementById('active-role-pill');
+                const userRoleBadge = document.getElementById('user-role-badge');
+                
+                let title = t.roleOutsource;
+                if (this.currentUser.role === 'admin') title = t.roleAdmin;
+                else if (this.currentUser.role === 'manager') title = t.roleManager;
+
+                rolePill.textContent = title;
+                userRoleBadge.textContent = title;
+            }
+
             logout() {
                 sessionStorage.removeItem('wms_user');
                 this.currentUser = null;
                 document.getElementById('auth-container').classList.remove('hidden');
                 document.getElementById('dashboard-container').classList.add('hidden');
                 document.getElementById('user-nav-section').classList.add('hidden');
-                this.showToast('Вы успешно вышли из системы', 'info');
+                this.showToast('Вы вышли из системы', 'info');
             }
 
             showTab(tabName) {
@@ -712,16 +1061,16 @@
                     requestsTab.classList.remove('hidden');
                     accessTab.classList.add('hidden');
                     btnReq.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white shadow-md shadow-blue-600/30 flex items-center space-x-2";
-                    btnAccess.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-gray-800 text-gray-400 hover:text-white flex items-center space-x-2";
+                    btnAccess.className = "px-4 py-2 rounded-xl text-xs font-semibold glass-card text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white flex items-center space-x-2";
                 } else {
                     requestsTab.classList.add('hidden');
                     accessTab.classList.remove('hidden');
                     btnAccess.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white shadow-md shadow-blue-600/30 flex items-center space-x-2";
-                    btnReq.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-gray-800 text-gray-400 hover:text-white flex items-center space-x-2";
+                    btnReq.className = "px-4 py-2 rounded-xl text-xs font-semibold glass-card text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white flex items-center space-x-2";
                 }
             }
 
-            // Create Request (ADMIN)
+            // Create Staffing Request (Admin)
             createRequest(e) {
                 e.preventDefault();
                 const warehouse = document.getElementById('req-warehouse').value;
@@ -747,25 +1096,22 @@
 
                 this.requests.unshift(newReq);
                 this.saveState();
-                this.showToast(`Заявка на ${warehouse} (${headcount} чел.) отправлена менеджеру!`, 'success');
+                this.showToast(`Заявка создана и отправлена менеджеру!`, 'success');
             }
 
-            // Render Job Requests Grid
+            // Render Requests Cards
             renderRequests() {
+                const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.ru;
                 const filter = document.getElementById('requests-filter').value;
                 const container = document.getElementById('requests-list-grid');
                 const countBadge = document.getElementById('requests-count-badge');
 
-                let filtered = this.requests.filter(req => {
-                    if (filter === 'all') return true;
-                    return req.status === filter;
-                });
-
+                let filtered = this.requests.filter(req => filter === 'all' || req.status === filter);
                 countBadge.textContent = filtered.length;
 
                 if (filtered.length === 0) {
                     container.innerHTML = `
-                        <div class="col-span-full text-center py-12 text-gray-500">
+                        <div class="col-span-full text-center py-12 text-gray-400">
                             <i class="fa-regular fa-folder-open text-4xl mb-3 block"></i>
                             <p class="text-sm">Заявки не найдены</p>
                         </div>
@@ -776,47 +1122,47 @@
                 container.innerHTML = filtered.map(req => {
                     let statusBadge = '';
                     if (req.status === 'pending') {
-                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5"><i class="fa-solid fa-clock text-[10px]"></i> На подтверждении</span>`;
+                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-500/20 text-amber-500 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1.5"><i class="fa-solid fa-clock text-[10px]"></i> ${t.statusPending}</span>`;
                     } else if (req.status === 'approved') {
-                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-500/20 text-green-400 border border-green-500/30 flex items-center gap-1.5"><i class="fa-solid fa-check-circle text-[10px]"></i> Подтверждена</span>`;
+                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-500/20 text-green-500 dark:text-green-400 border border-green-500/30 flex items-center gap-1.5"><i class="fa-solid fa-check-circle text-[10px]"></i> ${t.statusApproved}</span>`;
                     } else if (req.status === 'modified') {
-                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center gap-1.5"><i class="fa-solid fa-pen-circle text-[10px]"></i> Изменена менеджером</span>`;
+                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-500/20 text-blue-500 dark:text-blue-400 border border-blue-500/30 flex items-center gap-1.5"><i class="fa-solid fa-pen-circle text-[10px]"></i> ${t.statusModified}</span>`;
                     }
 
                     const isManager = this.currentUser && this.currentUser.role === 'manager';
 
                     return `
-                        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border border-gray-800 hover:border-gray-700 transition duration-200">
+                        <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border hover:border-gray-400 dark:hover:border-gray-700 transition duration-200">
                             <div>
                                 <div class="flex items-start justify-between gap-2 mb-3">
                                     <div>
-                                        <h4 class="font-bold text-white text-base">${req.warehouse}</h4>
-                                        <div class="text-[11px] text-gray-400">Создал: ${req.createdBy} (${req.createdAt})</div>
+                                        <h4 class="font-bold text-base">${req.warehouse}</h4>
+                                        <div class="text-[11px] text-gray-400">${t.created}: ${req.createdBy} (${req.createdAt})</div>
                                     </div>
                                     ${statusBadge}
                                 </div>
 
-                                <div class="space-y-2 py-3 border-y border-gray-800/80 my-3">
+                                <div class="space-y-2 py-3 border-y border-gray-200 dark:border-gray-800 my-3">
                                     <div class="flex items-center justify-between text-xs">
                                         <span class="text-gray-400"><i class="fa-regular fa-calendar mr-1.5"></i>Дата:</span>
-                                        <span class="font-semibold text-gray-200">${req.date}</span>
+                                        <span class="font-semibold">${req.date}</span>
                                     </div>
                                     <div class="flex items-center justify-between text-xs">
                                         <span class="text-gray-400"><i class="fa-regular fa-clock mr-1.5"></i>Время:</span>
-                                        <span class="font-semibold text-gray-200">${req.timeStart} - ${req.timeEnd}</span>
+                                        <span class="font-semibold">${req.timeStart} - ${req.timeEnd}</span>
                                     </div>
                                     <div class="flex items-center justify-between text-xs">
-                                        <span class="text-gray-400"><i class="fa-solid fa-users mr-1.5"></i>Требуется человек:</span>
-                                        <span class="font-bold text-lg text-blue-400">${req.currentHeadcount} <span class="text-xs font-normal text-gray-400">чел.</span></span>
+                                        <span class="text-gray-400"><i class="fa-solid fa-users mr-1.5"></i>Требуется:</span>
+                                        <span class="font-bold text-lg text-blue-500 dark:text-blue-400">${req.currentHeadcount} <span class="text-xs font-normal text-gray-400">${t.people}</span></span>
                                     </div>
 
                                     ${req.originalHeadcount !== req.currentHeadcount ? `
-                                        <div class="mt-2 text-xs bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20 text-amber-300">
+                                        <div class="mt-2 text-xs bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20 text-amber-600 dark:text-amber-300">
                                             <div class="font-semibold text-[11px] flex justify-between mb-1">
-                                                <span>Было сокращено: ${req.originalHeadcount} &rarr; ${req.currentHeadcount}</span>
+                                                <span>${t.wasReduced}: ${req.originalHeadcount} &rarr; ${req.currentHeadcount}</span>
                                             </div>
-                                            <div class="text-[11px] text-gray-300 italic">
-                                                <strong>Убраны:</strong> ${req.removedInfo || 'Информация не указана'}
+                                            <div class="text-[11px] italic">
+                                                <strong>${t.removed}:</strong> ${req.removedInfo || '---'}
                                             </div>
                                         </div>
                                     ` : ''}
@@ -825,9 +1171,9 @@
 
                             ${isManager ? `
                                 <div class="pt-2 flex items-center space-x-2">
-                                    <button onclick="app.openEditModal('${req.id}')" class="flex-1 py-2 px-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-semibold rounded-xl text-xs transition border border-blue-500/30 flex items-center justify-center space-x-1.5">
+                                    <button onclick="app.openEditModal('${req.id}')" class="flex-1 py-2 px-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-500 dark:text-blue-400 font-semibold rounded-xl text-xs transition border border-blue-500/30 flex items-center justify-center space-x-1.5">
                                         <i class="fa-solid fa-pen-to-square"></i>
-                                        <span>Изменить / Подтвердить</span>
+                                        <span>Редактировать</span>
                                     </button>
                                 </div>
                             ` : ''}
@@ -836,7 +1182,6 @@
                 }).join('');
             }
 
-            // Manager Edit Modal Open
             openEditModal(id) {
                 const req = this.requests.find(r => r.id === id);
                 if (!req) return;
@@ -875,7 +1220,6 @@
                 }
             }
 
-            // Save Manager Modification
             saveRequestModification(e) {
                 e.preventDefault();
                 const reqId = document.getElementById('modal-request-id').value;
@@ -885,9 +1229,8 @@
                 const newHeadcount = parseInt(document.getElementById('modal-headcount-input').value);
                 const removedInfo = document.getElementById('modal-removed-info').value.trim();
 
-                // Validation rule: If manager reduced headcount, manual note is mandatory
                 if (newHeadcount < req.originalHeadcount && !removedInfo) {
-                    this.showToast('Вы уменьшили количество людей! Обязательно укажите ФИО и контакты убранных человек.', 'error');
+                    this.showToast('Обязательно укажите ФИО и контакты убранных человек!', 'error');
                     return;
                 }
 
@@ -898,86 +1241,83 @@
 
                 this.saveState();
                 this.closeModal();
-                this.showToast('Заявка успешно обновлена менеджеру и синхронизирована!', 'success');
+                this.showToast('Изменения успешно сохранены!', 'success');
             }
 
-            // ACCESS CONTROL (WHITELIST / BLACKLIST) LOGIC
+            // Access Control Lists
             addPhoneToList(e) {
                 e.preventDefault();
-                const phone = document.getElementById('access-phone-input').value.trim().replace(/[\s\-\(\)]/g, '');
+                const rawPhone = document.getElementById('access-phone-input').value.trim();
+                const normalizedPhone = normalizePhone(rawPhone);
                 const note = document.getElementById('access-note-input').value.trim() || 'Без примечания';
                 const targetList = document.querySelector('input[name="target-list"]:checked').value;
 
-                if (!phone) {
-                    this.showToast('Введите номер телефона!', 'error');
+                if (!normalizedPhone || normalizedPhone.length < 9) {
+                    this.showToast('Введите корректный номер телефона!', 'error');
                     return;
                 }
 
-                // Remove from both lists first to avoid duplicate
-                this.whitelist = this.whitelist.filter(i => i.phone !== phone);
-                this.blacklist = this.blacklist.filter(i => i.phone !== phone);
+                // Clean duplicate entries from both lists using phone normalization
+                this.whitelist = this.whitelist.filter(i => normalizePhone(i.phone) !== normalizedPhone);
+                this.blacklist = this.blacklist.filter(i => normalizePhone(i.phone) !== normalizedPhone);
 
                 if (targetList === 'white') {
-                    this.whitelist.unshift({ phone, name: note });
-                    this.showToast(`Номер ${phone} добавлен в белый список!`, 'success');
+                    this.whitelist.unshift({ phone: normalizedPhone, name: note });
+                    this.showToast(`Номер ${normalizedPhone} добавлен в белый список!`, 'success');
                 } else {
-                    this.blacklist.unshift({ phone, name: note });
-                    this.showToast(`Номер ${phone} добавлен в черный список!`, 'error');
+                    this.blacklist.unshift({ phone: normalizedPhone, name: note });
+                    this.showToast(`Номер ${normalizedPhone} добавлен в черный список!`, 'error');
                 }
 
                 document.getElementById('access-phone-input').value = '';
                 document.getElementById('access-note-input').value = '';
-
                 this.saveState();
             }
 
             removePhone(phone, listType) {
+                const norm = normalizePhone(phone);
                 if (listType === 'white') {
-                    this.whitelist = this.whitelist.filter(i => i.phone !== phone);
+                    this.whitelist = this.whitelist.filter(i => normalizePhone(i.phone) !== norm);
                 } else {
-                    this.blacklist = this.blacklist.filter(i => i.phone !== phone);
+                    this.blacklist = this.blacklist.filter(i => normalizePhone(i.phone) !== norm);
                 }
                 this.saveState();
-                this.showToast(`Номер ${phone} удален из списка`, 'info');
+                this.showToast(`Номер удален из списка`, 'info');
             }
 
             renderAccessLists() {
                 const whiteContainer = document.getElementById('whitelist-container');
                 const blackContainer = document.getElementById('blacklist-container');
-                const whiteCount = document.getElementById('whitelist-count');
-                const blackCount = document.getElementById('blacklist-count');
 
-                whiteCount.textContent = this.whitelist.length;
-                blackCount.textContent = this.blacklist.length;
+                document.getElementById('whitelist-count').textContent = this.whitelist.length;
+                document.getElementById('blacklist-count').textContent = this.blacklist.length;
 
-                // Render Whitelist
                 if (this.whitelist.length === 0) {
-                    whiteContainer.innerHTML = `<div class="text-center py-6 text-gray-500 text-xs">Белый список пуст</div>`;
+                    whiteContainer.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">Белый список пуст</div>`;
                 } else {
                     whiteContainer.innerHTML = this.whitelist.map(item => `
-                        <div class="glass-card p-3 rounded-xl flex items-center justify-between border border-gray-800 hover:border-gray-700">
+                        <div class="glass-card p-3 rounded-xl flex items-center justify-between border hover:border-gray-400 dark:hover:border-gray-700">
                             <div>
-                                <div class="font-semibold text-xs text-white">${item.phone}</div>
+                                <div class="font-semibold text-xs">+${normalizePhone(item.phone)}</div>
                                 <div class="text-[11px] text-gray-400">${item.name}</div>
                             </div>
-                            <button onclick="app.removePhone('${item.phone}', 'white')" class="p-1.5 text-gray-500 hover:text-red-400 rounded-lg transition" title="Удалить">
+                            <button onclick="app.removePhone('${item.phone}', 'white')" class="p-1.5 text-gray-400 hover:text-red-500 rounded-lg transition">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>
                     `).join('');
                 }
 
-                // Render Blacklist
                 if (this.blacklist.length === 0) {
-                    blackContainer.innerHTML = `<div class="text-center py-6 text-gray-500 text-xs">Черный список пуст</div>`;
+                    blackContainer.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">Черный список пуст</div>`;
                 } else {
                     blackContainer.innerHTML = this.blacklist.map(item => `
-                        <div class="glass-card p-3 rounded-xl flex items-center justify-between border border-gray-800 hover:border-gray-700">
+                        <div class="glass-card p-3 rounded-xl flex items-center justify-between border hover:border-gray-400 dark:hover:border-gray-700">
                             <div>
-                                <div class="font-semibold text-xs text-red-400">${item.phone}</div>
+                                <div class="font-semibold text-xs text-red-500">+${normalizePhone(item.phone)}</div>
                                 <div class="text-[11px] text-gray-400">${item.name}</div>
                             </div>
-                            <button onclick="app.removePhone('${item.phone}', 'black')" class="p-1.5 text-gray-500 hover:text-red-400 rounded-lg transition" title="Удалить">
+                            <button onclick="app.removePhone('${item.phone}', 'black')" class="p-1.5 text-gray-400 hover:text-red-500 rounded-lg transition">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>
@@ -985,7 +1325,6 @@
                 }
             }
 
-            // Notification Toast UI Helper
             showToast(message, type = 'info') {
                 const toastContainer = document.getElementById('toast-container');
                 const toast = document.createElement('div');
@@ -1009,10 +1348,7 @@
 
                 toastContainer.appendChild(toast);
 
-                setTimeout(() => {
-                    toast.classList.remove('translate-y-2', 'opacity-0');
-                }, 10);
-
+                setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
                 setTimeout(() => {
                     toast.classList.add('opacity-0', '-translate-y-2');
                     setTimeout(() => toast.remove(), 300);
@@ -1020,7 +1356,6 @@
             }
         }
 
-        // Global App Initialization on Window Load
         let app;
         window.onload = function() {
             app = new WMSApp();
