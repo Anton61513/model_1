@@ -70,11 +70,16 @@ label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:14px 
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:10px;background:var(--card2);border:1px solid var(--bd);font-size:12.5px;color:var(--mut)}
 .chip b{color:var(--tx)}
+.chip.ok{background:var(--okb);color:var(--okc);border-color:transparent}.chip.ok b{color:var(--okc)}
 .st{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:99px;font-size:11.5px;font-weight:800}
-.st.pending{background:var(--wab);color:var(--wac)}.st.confirmed{background:var(--okb);color:var(--okc)}
-.rm{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--erb);font-size:13px}
-.rm>b{color:var(--erc)}
-.rm .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px dashed var(--bd);margin-top:6px;flex-wrap:wrap}
+.st.pending{background:var(--wab);color:var(--wac)}.st.confirmed,.st.ok{background:var(--okb);color:var(--okc)}
+.bar{height:8px;border-radius:99px;background:var(--card2);border:1px solid var(--bd);overflow:hidden;margin-top:12px;max-width:420px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pr),var(--okc));border-radius:99px;transition:width .4s}
+.rm,.tk{margin-top:14px;padding:12px 14px;border-radius:14px;font-size:13px}
+.rm{background:var(--erb)}.rm>b{color:var(--erc)}
+.tk{background:var(--okb)}.tk>b{color:var(--okc)}
+.rm .r,.tk .r{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-top:1px dashed var(--bd);margin-top:6px;flex-wrap:wrap}
+.tk .r span:first-child{display:flex;align-items:center;gap:8px}
 .empty{text-align:center;padding:56px 10px;color:var(--mut)}
 .empty svg{width:42px;height:42px;stroke-width:1.6;margin-bottom:10px;opacity:.8}
 .sub{font-size:16px;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:8px}
@@ -82,6 +87,8 @@ label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:14px 
 .tbl{width:100%;border-collapse:collapse;margin-top:6px}
 .tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);text-align:left;padding:8px 6px;font-weight:700}
 .tbl td{padding:10px 6px;border-top:1px solid var(--bd);font-size:13px}
+.tbl tr.clk{cursor:pointer}.tbl tr.clk:hover td{background:var(--card2)}
+.tbl.big td{font-size:14px;padding:13px 10px}.tbl.big th{padding:10px}
 .msg{padding:11px 14px;border-radius:12px;margin-top:14px;font-size:13px;font-weight:500}
 .msg.er{background:var(--erb);color:var(--erc)}.msg.ok{background:var(--okb);color:var(--okc)}
 .auth{max-width:470px;margin:6vh auto 0;padding:30px}
@@ -89,11 +96,16 @@ label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:14px 
 .auth .top{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px}
 .tabs2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 4px}
 .hint{font-size:12px;color:var(--mut);margin-top:6px}
+.chk{display:flex;align-items:center;gap:12px;margin:8px 0 0;padding:10px 14px;border:1px solid var(--bd);border-radius:14px;background:var(--card2);cursor:pointer;color:var(--tx);font-size:13px}
+.chk input{width:auto;accent-color:var(--pr);transform:scale(1.2)}
+.sms{display:flex;gap:14px;align-items:flex-start}
+.sms .ic{width:38px;height:38px;border-radius:12px;background:var(--chip);color:var(--chipc);display:flex;align-items:center;justify-content:center;flex:none}
+.sms.new .ic{background:var(--pr);color:#fff}
 #toast{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:200}
 .t{background:var(--card);border:1px solid var(--prs);backdrop-filter:blur(16px);box-shadow:var(--shadow);padding:13px 18px;border-radius:16px;max-width:340px;font-weight:600;animation:in .3s}
 @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .mbg{position:fixed;inset:0;background:rgba(5,8,18,.6);backdrop-filter:blur(5px);display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto;z-index:100}
-.modal{width:100%;max-width:580px;margin-top:5vh;padding:26px}
+.modal{width:100%;max-width:600px;margin-top:4vh;padding:26px}
 .modal h2{margin:0 0 8px}
 .rr{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;margin-top:10px}
 </style>
@@ -108,7 +120,7 @@ const L = {
 uk:{
  panel:'Панель керування',sync:'Синхронізація в реальному часі активна',logout:'Вийти',
  r_outsource:'Аутсорс',r_manager:'Менеджер',r_admin:'Адмін',
- tab_new:'Нова заявка',tab_mine:'Мої заявки',tab_req:'Заявки',tab_lists:'Білий / Чорний список',tab_open:'Доступні заявки',
+ tab_new:'Нова заявка',tab_mine:'Мої заявки',tab_req:'Заявки',tab_lists:'Білий / Чорний список',tab_open:'Вийти на роботу',tab_reserve:'Резерв',tab_sms:'SMS',
  title:'Заявки на аутсорс',signin:'Вхід',register:'Реєстрація',role:'Роль',name:'ПІБ',phone:'Номер телефону',
  phoneWL:'Номер телефону (має бути в білому списку)',phoneOpt:'Номер телефону (необов’язково)',code:'Код доступу',
  btnIn:'Увійти',btnReg:'Зареєструватися',
@@ -119,22 +131,36 @@ uk:{
  e_blockedin:'Доступ закрито: номер у чорному списку',kicked:'Доступ закрито: ваш номер додано до чорного списку',
  listTitle:'Список заявок',listSub:'Усі зміни одразу відображаються в інших користувачів',filter:'Фільтр:',
  f_pending:'На підтвердженні',f_confirmed:'Підтверджені',f_all:'Усі',none:'Заявок не знайдено',
- newTitle:'Нова заявка',newSub:'Заявка одразу з’явиться у менеджера',mineTitle:'Мої заявки',openTitle:'Доступні заявки',openSub:'Підтверджені заявки на роботу',
- wh:'Склад',whph:'Наприклад: ЄРЦ',cnt:'Кількість людей',date:'Дата',from:'Робочий день з',to:'до',send:'Надіслати менеджеру на підтвердження',
- e_wh:'Вкажіть склад',e_cnt:'Вкажіть кількість людей',e_date:'Оберіть дату',e_time:'Вкажіть коректний час роботи',sent:'Заявку надіслано менеджеру',
- st_pending:'На підтвердженні',st_confirmed:'Підтверджено',review:'Розглянути',people:'Людей',adm:'Адмін',
+ newTitle:'Нова заявка',newSub:'Заявка одразу з’явиться у менеджера',mineTitle:'Мої заявки',mineSub:'Статус і набір людей оновлюються автоматично',
+ openTitle:'Вийти на роботу',openSub:'Оберіть вакансію й запишіться на неї',
+ wh:'Склад',whph:'Наприклад: ЄРЦ',cnt:'Кількість людей',date:'Дата',from:'Робочий день з',to:'до',adminPhone:'Телефон адміна (для зв’язку)',
+ send:'Надіслати менеджеру на підтвердження',
+ e_wh:'Вкажіть склад',e_cnt:'Вкажіть кількість людей',e_date:'Оберіть дату',e_time:'Вкажіть коректний час роботи',e_aph:'Вкажіть коректний телефон адміна',sent:'Заявку надіслано менеджеру',
+ st_pending:'На підтвердженні',st_confirmed:'Підтверджено',review:'Розглянути',people:'Людей',adm:'Адмін',admTel:'Телефон адміна',
  rmTitle:'Прибрано із заявки',toBlack:'У чорний список',inBlack:'у чорному списку',
+ filled:'Набрано',tkTitle:'Вийшли на роботу',tkFull:'Набрано повністю — список тих, хто вийде',viaReserve:'з резерву',
+ progToast:'{w}: набрано {f}/{n}',closedToast:'Заявку «{w}» закрито {f}/{n}. Список готовий',
  newReq:'Нова заявка: {w}, {n} осіб, {d}',confirmedT:'Заявку «{w}» підтверджено менеджером',confirmedOk:'Заявку підтверджено',already:'Заявку вже опрацьовано',
+ take:'Вийти на роботу',leave:'Відмовитися',youIn:'Ви записані',taken:'Ви записані на вакансію',left:'Ви відмовилися від вакансії',
+ e_full:'Місць більше немає',e_busy:'У вас уже є робота на цю дату',
  m_title:'Заявка',m_cnt:'Кількість людей (запитано: {n}; можна лише зменшити)',m_rm:'Ви прибираєте {n} осіб. Впишіть вручну, кого саме:',fio:'ПІБ',tel:'Телефон',
+ m_res:'Обрати з резерву на {d}',m_resHint:'Позначені люди отримають SMS з деталями вакансії',m_resNone:'На цю дату в резерві нікого немає',m_resSel:'Обрано: {a} з {b}',
  cancel:'Скасувати',confirm:'Підтвердити заявку',e_mcnt:'Кількість людей — мінімум 1',e_mmax:'Збільшувати кількість не можна, лише зменшувати',
  e_mrows:'Оновіть кількість і заповніть список прибраних людей',e_mfio:'Впишіть ПІБ кожного прибраного',e_mtel:'Впишіть коректний телефон кожного прибраного (від 9 цифр)',
+ e_msel:'З резерву обрано більше людей, ніж місць у заявці',e_mbusy:'Хтось із обраних уже зайнятий на цю дату. Закрийте вікно й відкрийте знову',
+ resTitle:'Резерв',resSub:'Оберіть дату, на яку готові взяти заявку. Менеджер зможе призначити вас на вакансію',resDate:'Дата',resAdd:'Стати в резерв',
+ resMine:'Мої дати в резерві',resNone:'Ви не стоїте в резерві',resAdded:'Ви в резерві на цю дату',resCancel:'Прибрати',e_resdup:'Ви вже в резерві на цю дату',e_resdate:'Оберіть дату',
+ mresTitle:'Резерв за датами',mresSub:'Скільки людей у резерві та скільки місць потрібно закрити. Клік по рядку — список людей',
+ colDate:'Дата',colRes:'Резерв',colNeed:'Потрібно людей',colReqs:'Заявок',ppl:'осіб',noRes:'У резерві нікого немає',
+ smsTitle:'SMS-повідомлення',smsSub:'Сповіщення про ваші вакансії',smsNone:'Повідомлень поки немає',smsToast:'Нове SMS: {t}',
+ smsText:'{d}: у вас вакансія з {f} до {t}, склад «{w}». Телефон адміна: {p}',
  white:'Білий список',black:'Чорний список',whiteD:'Ці номери зможуть зареєструватися як «Аутсорс».',blackD:'Ці номери не можуть зареєструватися й увійти. Чорний список сильніший за білий.',
- note:'ПІБ / нотатка',addW:'Додати в білий',addB:'Додати в чорний',inList:'У списку',added:'Дата',del:'Видалити',emptyL:'Список порожній',
- e_dupL:'Цей номер уже в списку',e_bl1:'Номер у чорному списку. Спершу видаліть його звідти',addedW:'Номер додано в білий список',addedB:'Номер додано в чорний список',addedBN:'Додано в чорний список: {n}'},
+ note:'ПІБ / нотатка',addW:'Додати в білий',addB:'Додати в чорний',emptyL:'Список порожній',
+ e_dupL:'Цей номер уже в списку',e_bl1:'Номер у чорному списку. Спершу видаліть його звідти',addedW:'Номер додано в білий список',addedB:'Номер додано в чорний список',addedBN:'Додано в чорний список: {n}',del:'Видалити'},
 ru:{
  panel:'Панель управления',sync:'Синхронизация в реальном времени активна',logout:'Выйти',
  r_outsource:'Аутсорс',r_manager:'Менеджер',r_admin:'Админ',
- tab_new:'Новая заявка',tab_mine:'Мои заявки',tab_req:'Заявки',tab_lists:'Белый / Чёрный список',tab_open:'Доступные заявки',
+ tab_new:'Новая заявка',tab_mine:'Мои заявки',tab_req:'Заявки',tab_lists:'Белый / Чёрный список',tab_open:'Выйти на работу',tab_reserve:'Резерв',tab_sms:'SMS',
  title:'Заявки на аутсорс',signin:'Вход',register:'Регистрация',role:'Роль',name:'ФИО',phone:'Номер телефона',
  phoneWL:'Номер телефона (должен быть в белом списке)',phoneOpt:'Номер телефона (необязательно)',code:'Код доступа',
  btnIn:'Войти',btnReg:'Зарегистрироваться',
@@ -145,22 +171,36 @@ ru:{
  e_blockedin:'Доступ закрыт: номер в чёрном списке',kicked:'Доступ закрыт: ваш номер добавлен в чёрный список',
  listTitle:'Список заявок',listSub:'Все изменения сразу отображаются у остальных пользователей',filter:'Фильтр:',
  f_pending:'На подтверждении',f_confirmed:'Подтверждённые',f_all:'Все',none:'Заявки не найдены',
- newTitle:'Новая заявка',newSub:'Заявка сразу появится у менеджера',mineTitle:'Мои заявки',openTitle:'Доступные заявки',openSub:'Подтверждённые заявки на работу',
- wh:'Склад',whph:'Например: ЕРЦ',cnt:'Количество человек',date:'Дата',from:'Рабочий день с',to:'до',send:'Отправить менеджеру на подтверждение',
- e_wh:'Укажите склад',e_cnt:'Укажите количество человек',e_date:'Выберите дату',e_time:'Укажите корректное время работы',sent:'Заявка отправлена менеджеру',
- st_pending:'На подтверждении',st_confirmed:'Подтверждена',review:'Рассмотреть',people:'Людей',adm:'Админ',
+ newTitle:'Новая заявка',newSub:'Заявка сразу появится у менеджера',mineTitle:'Мои заявки',mineSub:'Статус и набор людей обновляются автоматически',
+ openTitle:'Выйти на работу',openSub:'Выберите вакансию и запишитесь на неё',
+ wh:'Склад',whph:'Например: ЕРЦ',cnt:'Количество человек',date:'Дата',from:'Рабочий день с',to:'до',adminPhone:'Телефон админа (для связи)',
+ send:'Отправить менеджеру на подтверждение',
+ e_wh:'Укажите склад',e_cnt:'Укажите количество человек',e_date:'Выберите дату',e_time:'Укажите корректное время работы',e_aph:'Укажите корректный телефон админа',sent:'Заявка отправлена менеджеру',
+ st_pending:'На подтверждении',st_confirmed:'Подтверждена',review:'Рассмотреть',people:'Людей',adm:'Админ',admTel:'Телефон админа',
  rmTitle:'Убраны из заявки',toBlack:'В чёрный список',inBlack:'в чёрном списке',
+ filled:'Набрано',tkTitle:'Вышли на работу',tkFull:'Набрано полностью — список тех, кто выйдет',viaReserve:'из резерва',
+ progToast:'{w}: набрано {f}/{n}',closedToast:'Заявка «{w}» закрыта {f}/{n}. Список готов',
  newReq:'Новая заявка: {w}, {n} чел., {d}',confirmedT:'Заявка «{w}» подтверждена менеджером',confirmedOk:'Заявка подтверждена',already:'Заявка уже обработана',
+ take:'Выйти на работу',leave:'Отказаться',youIn:'Вы записаны',taken:'Вы записаны на вакансию',left:'Вы отказались от вакансии',
+ e_full:'Свободных мест больше нет',e_busy:'У вас уже есть работа на эту дату',
  m_title:'Заявка',m_cnt:'Количество человек (запрошено: {n}; можно только уменьшить)',m_rm:'Вы убираете {n} чел. Впишите вручную, кого именно:',fio:'ФИО',tel:'Телефон',
+ m_res:'Выбрать из резерва на {d}',m_resHint:'Отмеченные получат SMS с деталями вакансии',m_resNone:'На эту дату в резерве никого нет',m_resSel:'Выбрано: {a} из {b}',
  cancel:'Отмена',confirm:'Подтвердить заявку',e_mcnt:'Количество человек — минимум 1',e_mmax:'Увеличивать количество нельзя, только уменьшать',
  e_mrows:'Обновите количество и заполните список убранных людей',e_mfio:'Впишите ФИО каждого убранного',e_mtel:'Впишите корректный телефон каждого убранного (от 9 цифр)',
+ e_msel:'Из резерва выбрано больше людей, чем мест в заявке',e_mbusy:'Кто-то из выбранных уже занят на эту дату. Закройте окно и откройте снова',
+ resTitle:'Резерв',resSub:'Выберите дату, на которую готовы взять заявку. Менеджер сможет назначить вас на вакансию',resDate:'Дата',resAdd:'Встать в резерв',
+ resMine:'Мои даты в резерве',resNone:'Вы не стоите в резерве',resAdded:'Вы в резерве на эту дату',resCancel:'Убрать',e_resdup:'Вы уже в резерве на эту дату',e_resdate:'Выберите дату',
+ mresTitle:'Резерв по датам',mresSub:'Сколько людей в резерве и сколько мест нужно закрыть. Клик по строке — список людей',
+ colDate:'Дата',colRes:'Резерв',colNeed:'Нужно людей',colReqs:'Заявок',ppl:'чел.',noRes:'В резерве никого нет',
+ smsTitle:'SMS-сообщения',smsSub:'Уведомления о ваших вакансиях',smsNone:'Сообщений пока нет',smsToast:'Новое SMS: {t}',
+ smsText:'{d}: у вас вакансия с {f} до {t}, склад «{w}». Телефон админа: {p}',
  white:'Белый список',black:'Чёрный список',whiteD:'Люди с этими номерами смогут зарегистрироваться как «Аутсорс».',blackD:'Эти номера не могут зарегистрироваться и войти. Чёрный список сильнее белого.',
- note:'ФИО / заметка',addW:'Добавить в белый',addB:'Добавить в чёрный',inList:'В списке',added:'Дата',del:'Удалить',emptyL:'Список пуст',
- e_dupL:'Этот номер уже в списке',e_bl1:'Номер в чёрном списке. Сначала удалите его оттуда',addedW:'Номер добавлен в белый список',addedB:'Номер добавлен в чёрный список',addedBN:'Добавлен в чёрный список: {n}'},
+ note:'ФИО / заметка',addW:'Добавить в белый',addB:'Добавить в чёрный',emptyL:'Список пуст',
+ e_dupL:'Этот номер уже в списке',e_bl1:'Номер в чёрном списке. Сначала удалите его оттуда',addedW:'Номер добавлен в белый список',addedB:'Номер добавлен в чёрный список',addedBN:'Добавлен в чёрный список: {n}',del:'Удалить'},
 en:{
  panel:'Control panel',sync:'Real-time sync is active',logout:'Log out',
  r_outsource:'Outsource',r_manager:'Manager',r_admin:'Admin',
- tab_new:'New request',tab_mine:'My requests',tab_req:'Requests',tab_lists:'Whitelist / Blacklist',tab_open:'Open requests',
+ tab_new:'New request',tab_mine:'My requests',tab_req:'Requests',tab_lists:'Whitelist / Blacklist',tab_open:'Go to work',tab_reserve:'Reserve',tab_sms:'SMS',
  title:'Outsource requests',signin:'Sign in',register:'Register',role:'Role',name:'Full name',phone:'Phone number',
  phoneWL:'Phone number (must be on the whitelist)',phoneOpt:'Phone number (optional)',code:'Access code',
  btnIn:'Sign in',btnReg:'Register',
@@ -171,26 +211,39 @@ en:{
  e_blockedin:'Access denied: number is blacklisted',kicked:'Access denied: your number was added to the blacklist',
  listTitle:'Requests list',listSub:'All changes are shown to other users instantly',filter:'Filter:',
  f_pending:'Pending',f_confirmed:'Confirmed',f_all:'All',none:'No requests found',
- newTitle:'New request',newSub:'The request will instantly appear for the manager',mineTitle:'My requests',openTitle:'Open requests',openSub:'Confirmed requests for work',
- wh:'Warehouse',whph:'For example: ERC',cnt:'Number of people',date:'Date',from:'Work day from',to:'to',send:'Send to manager for approval',
- e_wh:'Enter a warehouse',e_cnt:'Enter the number of people',e_date:'Pick a date',e_time:'Enter a valid working time',sent:'Request sent to the manager',
- st_pending:'Pending',st_confirmed:'Confirmed',review:'Review',people:'People',adm:'Admin',
+ newTitle:'New request',newSub:'The request will instantly appear for the manager',mineTitle:'My requests',mineSub:'Status and staffing update automatically',
+ openTitle:'Go to work',openSub:'Pick a vacancy and sign up for it',
+ wh:'Warehouse',whph:'For example: ERC',cnt:'Number of people',date:'Date',from:'Work day from',to:'to',adminPhone:'Admin phone (contact)',
+ send:'Send to manager for approval',
+ e_wh:'Enter a warehouse',e_cnt:'Enter the number of people',e_date:'Pick a date',e_time:'Enter a valid working time',e_aph:'Enter a valid admin phone',sent:'Request sent to the manager',
+ st_pending:'Pending',st_confirmed:'Confirmed',review:'Review',people:'People',adm:'Admin',admTel:'Admin phone',
  rmTitle:'Removed from request',toBlack:'To blacklist',inBlack:'blacklisted',
+ filled:'Filled',tkTitle:'Signed up for work',tkFull:'Fully staffed — list of people coming to work',viaReserve:'from reserve',
+ progToast:'{w}: filled {f}/{n}',closedToast:'Request “{w}” closed {f}/{n}. The list is ready',
  newReq:'New request: {w}, {n} people, {d}',confirmedT:'Request “{w}” was confirmed by the manager',confirmedOk:'Request confirmed',already:'This request was already processed',
+ take:'Go to work',leave:'Cancel',youIn:'You are signed up',taken:'You are signed up for the vacancy',left:'You cancelled the vacancy',
+ e_full:'No spots left',e_busy:'You already have work on this date',
  m_title:'Request',m_cnt:'Number of people (requested: {n}; can only be decreased)',m_rm:'You are removing {n} people. Enter manually who:',fio:'Full name',tel:'Phone',
+ m_res:'Pick from reserve for {d}',m_resHint:'Selected people will get an SMS with the vacancy details',m_resNone:'Nobody in reserve for this date',m_resSel:'Selected: {a} of {b}',
  cancel:'Cancel',confirm:'Confirm request',e_mcnt:'Number of people — at least 1',e_mmax:'You cannot increase the number, only decrease it',
  e_mrows:'Update the number and fill in the list of removed people',e_mfio:'Enter the full name of each removed person',e_mtel:'Enter a valid phone of each removed person (9+ digits)',
+ e_msel:'More people selected from reserve than there are spots',e_mbusy:'Someone selected is already busy on this date. Close the window and reopen',
+ resTitle:'Reserve',resSub:'Pick a date you are ready to take a request on. A manager may assign you to a vacancy',resDate:'Date',resAdd:'Join the reserve',
+ resMine:'My reserve dates',resNone:'You are not in the reserve',resAdded:'You are in the reserve for this date',resCancel:'Remove',e_resdup:'You are already in the reserve for this date',e_resdate:'Pick a date',
+ mresTitle:'Reserve by date',mresSub:'How many people are in reserve and how many spots must be filled. Click a row to see people',
+ colDate:'Date',colRes:'Reserve',colNeed:'People needed',colReqs:'Requests',ppl:'ppl',noRes:'Nobody in reserve',
+ smsTitle:'SMS messages',smsSub:'Notifications about your vacancies',smsNone:'No messages yet',smsToast:'New SMS: {t}',
+ smsText:'{d}: you have a job from {f} to {t}, warehouse “{w}”. Admin phone: {p}',
  white:'Whitelist',black:'Blacklist',whiteD:'People with these numbers can register as “Outsource”.',blackD:'These numbers cannot register or sign in. Blacklist overrides whitelist.',
- note:'Full name / note',addW:'Add to whitelist',addB:'Add to blacklist',inList:'In list',added:'Added',del:'Delete',emptyL:'List is empty',
- e_dupL:'This number is already in the list',e_bl1:'Number is blacklisted. Remove it from there first',addedW:'Number added to whitelist',addedB:'Number added to blacklist',addedBN:'Added to blacklist: {n}'}
+ note:'Full name / note',addW:'Add to whitelist',addB:'Add to blacklist',emptyL:'List is empty',
+ e_dupL:'This number is already in the list',e_bl1:'Number is blacklisted. Remove it from there first',addedW:'Number added to whitelist',addedB:'Number added to blacklist',addedBN:'Added to blacklist: {n}',del:'Delete'}
 };
-const HTML_LANG = {uk:'uk',ru:'ru',en:'en'};
-let lang = localStorage.getItem('smeny_lang') || 'ru'; if(!L[lang]) lang='ru';
+let lang = localStorage.getItem('smeny_lang') || 'ru'; if (!L[lang]) lang = 'ru';
 let theme = localStorage.getItem('smeny_theme') || 'dark';
-const T = (k, v) => { let s = (L[lang][k] ?? L.ru[k] ?? k); if (v) for (const x in v) s = s.replace('{' + x + '}', v[x]); return s; };
-function applyPrefs(){ document.documentElement.dataset.theme = theme; document.documentElement.lang = HTML_LANG[lang]; }
-function setLang(l){ lang=l; localStorage.setItem('smeny_lang',l); applyPrefs(); closeModal(); render(); }
-function toggleTheme(){ theme = theme==='dark'?'light':'dark'; localStorage.setItem('smeny_theme',theme); applyPrefs(); render(); }
+const T = (k, v) => { let s = (L[lang][k] ?? L.ru[k] ?? k); if (v) for (const x in v) s = s.split('{' + x + '}').join(v[x]); return s; };
+function applyPrefs(){ document.documentElement.dataset.theme = theme; document.documentElement.lang = lang; }
+function setLang(l){ lang = l; localStorage.setItem('smeny_lang', l); applyPrefs(); closeModal(); render(); }
+function toggleTheme(){ theme = theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('smeny_theme', theme); applyPrefs(); render(); }
 applyPrefs();
 
 /* ================= ICONS ================= */
@@ -203,6 +256,7 @@ const IC = {
  moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
  plus:'<path d="M12 5v14M5 12h14"/>',
  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+ x:'<path d="M18 6L6 18M6 6l12 12"/>',
  ban:'<circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/>',
  out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
  folder:'<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
@@ -212,16 +266,23 @@ const IC = {
  send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',
  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
- wh:'<path d="M3 21V8l9-5 9 5v13M9 21v-7h6v7"/>'
+ wh:'<path d="M3 21V8l9-5 9 5v13M9 21v-7h6v7"/>',
+ mail:'<path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M22 6l-10 7L2 6"/>',
+ phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+ bookmark:'<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>'
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24">${IC[n]}</svg>`;
 
 /* ================= DATA ================= */
-const KEY = 'smeny_db_v2';
+const KEY = 'smeny_db_v3';
 const CODES = { manager: '000', admin: '111' };
-const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('smeny2') : null;
-const fresh = () => ({ users: [], white: [], black: [], requests: [] });
-function load(){ try{ const d = JSON.parse(localStorage.getItem(KEY)); return d && d.users ? d : fresh(); }catch(e){ return fresh(); } }
+const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('smeny3') : null;
+const fresh = () => ({ users: [], white: [], black: [], requests: [], reserves: [], sms: [] });
+function load(){
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (!d || !d.users) return fresh();
+    ['white','black','requests','reserves','sms'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; }); return d; }
+  catch(e){ return fresh(); }
+}
 let db = load(), lastRaw = localStorage.getItem(KEY);
 function save(){
   const raw = JSON.stringify(db); localStorage.setItem(KEY, raw); lastRaw = raw;
@@ -236,19 +297,29 @@ const digits = p => String(p || '').replace(/\D/g, '');
 const pkey = p => digits(p).slice(-9);
 const validPhone = p => digits(p).length >= 9;
 const fmtDate = d => d ? d.split('-').reverse().join('.') : '';
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const inList = (l, p) => db[l].some(x => pkey(x.phone) === pkey(p));
-function toast(t){ const e = document.createElement('div'); e.className = 't'; e.textContent = t; $('#toast').appendChild(e); setTimeout(() => e.remove(), 5000); }
+const tk = r => r.takers || [];
+const isFull = r => r.status === 'confirmed' && tk(r).length >= r.count;
+const worksOn = (u, date) => db.requests.some(r => r.status === 'confirmed' && r.date === date && tk(r).some(x => x.uid === u));
+function toast(t){ const e = document.createElement('div'); e.className = 't'; e.textContent = t; $('#toast').appendChild(e); setTimeout(() => e.remove(), 5500); }
+// люди в резерве на дату: пользователь существует, не в чёрном списке, не занят в этот день
+function resFor(date){
+  return db.reserves.filter(x => x.date === date).map(x => { const u = db.users.find(y => y.id === x.uid); return u ? { rid: x.id, uid: u.id, name: u.name, phone: u.phone } : null; })
+    .filter(x => x && !inList('black', x.phone) && !worksOn(x.uid, date));
+}
+function smsText(s){ return T('smsText', { d: fmtDate(s.date), f: s.from, t: s.to, w: s.warehouse, p: s.adminPhone }); }
 
 /* ================= SESSION ================= */
-// sessionStorage: у каждой вкладки своя сессия — можно открыть админа и менеджера рядом
+// sessionStorage: у каждой вкладки своя сессия — можно открыть админа, менеджера и аутсорс рядом
 const me = () => db.users.find(u => u.id === sessionStorage.getItem('uid')) || null;
-let ui = { tab: null, mode: 'in', role: 'outsource', filter: 'pending' };
+let ui = { tab: null, mode: 'in', role: 'outsource', filter: 'pending', resOpen: {} };
 const roleName = r => T('r_' + r);
 
 /* ================= AUTH ================= */
 function prefsHtml(){
   return `<div class="seg">${['uk','ru','en'].map(l => `<button class="${lang===l?'on':''}" onclick="setLang('${l}')">${l.toUpperCase()}</button>`).join('')}</div>
-  <button class="btn ico" onclick="toggleTheme()" title="theme">${ic(theme==='dark'?'sun':'moon')}</button>`;
+  <button class="btn ico" onclick="toggleTheme()">${ic(theme==='dark'?'sun':'moon')}</button>`;
 }
 function renderAuth(){
   const reg = ui.mode === 'reg', out = ui.role === 'outsource';
@@ -314,8 +385,8 @@ function logout(){ sessionStorage.removeItem('uid'); closeModal(); ui.tab = null
 
 /* ================= APP SHELL ================= */
 const tabsFor = r => r === 'admin' ? [['new','plus','tab_new'],['mine','list','tab_mine']]
-  : r === 'manager' ? [['req','list','tab_req'],['lists','ucheck','tab_lists']]
-  : [['open','list','tab_open']];
+  : r === 'manager' ? [['req','list','tab_req'],['reserve','bookmark','tab_reserve'],['lists','ucheck','tab_lists']]
+  : [['open','list','tab_open'],['reserve','bookmark','tab_reserve'],['sms','mail','tab_sms']];
 function startApp(){ ui.tab = tabsFor(me().role)[0][0]; snapshot(); render(); }
 function render(){ if (!me()) renderAuth(); else renderApp(); }
 
@@ -335,9 +406,11 @@ function renderApp(){
 function renderNav(){
   const u = me(); if (!u || !$('#nav')) return;
   const pending = db.requests.filter(r => r.status === 'pending').length;
-  $('#nav').innerHTML = tabsFor(u.role).map(([id, icn, key]) =>
-    `<button class="btn ${ui.tab===id?'on':''}" onclick="goTab('${id}')">${ic(icn)}${T(key)}${id==='req' && pending ? `<span class="dot">${pending}</span>` : ''}</button>`).join('')
-    + prefsHtml() + `<button class="btn ico" onclick="logout()" title="${T('logout')}">${ic('out')}</button>`;
+  const unread = db.sms.filter(s => s.to === u.id && !s.read).length;
+  $('#nav').innerHTML = tabsFor(u.role).map(([id, icn, key]) => {
+    const n = (id === 'req' && u.role === 'manager') ? pending : (id === 'sms' ? unread : 0);
+    return `<button class="btn ${ui.tab===id?'on':''}" onclick="goTab('${id}')">${ic(icn)}${T(key)}${n ? `<span class="dot">${n}</span>` : ''}</button>`;
+  }).join('') + prefsHtml() + `<button class="btn ico" onclick="logout()" title="${T('logout')}">${ic('out')}</button>`;
 }
 function goTab(id){ ui.tab = id; renderNav(); renderTab(); }
 
@@ -348,24 +421,30 @@ function head(title, sub, withFilter){
     ${['pending','confirmed','all'].map(f => `<option value="${f}" ${ui.filter===f?'selected':''}>${T('f_'+f)}</option>`).join('')}</select></div>` : ''}</div>`;
 }
 function renderTab(){
-  const t = ui.tab; let h = '';
-  if (t === 'req') h = head(T('listTitle'), T('listSub'), true) + '<div class="list" id="lv"></div>';
-  else if (t === 'mine') h = head(T('mineTitle'), T('newSub'), false) + '<div class="list" id="lv"></div>';
-  else if (t === 'open') h = head(T('openTitle'), T('openSub'), false) + '<div class="list" id="lv"></div>';
+  const t = ui.tab, role = me().role; let h = '';
+  const lv = '<div class="list" id="lv"></div>';
+  if (t === 'req') h = head(T('listTitle'), T('listSub'), true) + lv;
+  else if (t === 'mine') h = head(T('mineTitle'), T('mineSub'), false) + lv;
+  else if (t === 'open') h = head(T('openTitle'), T('openSub'), false) + lv;
   else if (t === 'new') h = newForm();
   else if (t === 'lists') h = `<div class="g2c">${listPanel('white')}${listPanel('black')}</div>`;
+  else if (t === 'sms') h = head(T('smsTitle'), T('smsSub'), false) + lv;
+  else if (t === 'reserve' && role === 'manager') h = head(T('mresTitle'), T('mresSub'), false) + lv;
+  else if (t === 'reserve') h = head(T('resTitle'), T('resSub'), false) + `
+    <div style="max-width:520px;margin-bottom:22px"><label style="margin-top:0">${T('resDate')}</label>
+    <div style="display:flex;gap:10px"><input id="rs_date" type="date" min="${todayStr()}"><button class="btn pr" style="white-space:nowrap" onclick="addReserve()">${ic('plus')}${T('resAdd')}</button></div></div>` + lv;
   $('#content').innerHTML = h; paintLive();
 }
 function newForm(){
-  const today = new Date().toISOString().slice(0, 10);
   return `<div class="ph"><div><h2>${T('newTitle')}</h2><p>${T('newSub')}</p></div></div>
   <div style="max-width:620px">
     <label style="margin-top:0">${T('wh')}</label><input id="n_wh" list="whl" placeholder="${T('whph')}">
     <datalist id="whl">${[...new Set(db.requests.map(r => r.warehouse))].map(w => `<option value="${esc(w)}">`).join('')}</datalist>
     <div class="g2"><div><label>${T('cnt')}</label><input id="n_cnt" type="number" min="1" value="1"></div>
-    <div><label>${T('date')}</label><input id="n_date" type="date" min="${today}"></div></div>
+    <div><label>${T('date')}</label><input id="n_date" type="date" min="${todayStr()}"></div></div>
     <div class="g2"><div><label>${T('from')}</label><input id="n_from" type="time" value="08:00"></div>
     <div><label>${T('to')}</label><input id="n_to" type="time" value="20:00"></div></div>
+    <label>${T('adminPhone')}</label><input id="n_aph" inputmode="tel" placeholder="0665445267" value="${esc(me().phone || '')}">
     <div style="margin-top:22px"><button class="btn pr wide" onclick="sendRequest()">${ic('send')}${T('send')}</button></div>
     <div id="nmsg"></div>
   </div>`;
@@ -382,15 +461,30 @@ function listPanel(type){
 
 /* ================= LIVE PART ================= */
 function refreshLive(){ if (!me() || !$('#content')) return; renderNav(); paintLive(); }
-function emptyBox(){ return `<div class="empty">${ic('folder')}<div>${T('none')}</div></div>`; }
+const emptyBox = (k = 'none') => `<div class="empty">${ic('folder')}<div>${T(k)}</div></div>`;
+function markRead(){
+  const u = me(); const m = db.sms.filter(s => s.to === u.id && !s.read); if (!m.length) return;
+  m.forEach(s => s.read = true);
+  const raw = JSON.stringify(db); localStorage.setItem(KEY, raw); lastRaw = raw; if (bc) bc.postMessage('u'); renderNav();
+}
 function paintLive(){
   const u = me(); if (!u) return;
   const t = ui.tab, setCnt = (id, n) => { const e = $(id); if (e) e.textContent = n; };
-  let items = null;
+  let items = null, fn = reqCard;
   if (t === 'mine') items = db.requests.filter(r => r.by === u.id).sort((a, b) => b.createdAt - a.createdAt);
-  if (t === 'open') items = db.requests.filter(r => r.status === 'confirmed').sort((a, b) => (a.date + a.from).localeCompare(b.date + b.from));
   if (t === 'req') items = db.requests.filter(r => ui.filter === 'all' || r.status === ui.filter).sort((a, b) => b.createdAt - a.createdAt);
-  if (items && $('#lv')){ $('#lv').innerHTML = items.length ? items.map(reqCard).join('') : emptyBox(); setCnt('#cnt', items.length); }
+  if (t === 'open'){ fn = shiftCard; items = db.requests.filter(r => r.status === 'confirmed' && (tk(r).length < r.count || tk(r).some(x => x.uid === u.id))).sort((a, b) => (a.date + a.from).localeCompare(b.date + b.from)); }
+  if (t === 'sms'){ fn = smsCard; items = db.sms.filter(s => s.to === u.id).sort((a, b) => b.at - a.at); }
+  if (t === 'reserve' && u.role === 'outsource'){
+    fn = x => `<div class="item it" style="align-items:center"><div class="wh">${ic('cal')}${fmtDate(x.date)}</div><button class="btn sm dg" onclick="cancelReserve('${x.id}')">${ic('x')}${T('resCancel')}</button></div>`;
+    items = db.reserves.filter(x => x.uid === u.id).sort((a, b) => a.date.localeCompare(b.date));
+  }
+  if (items && $('#lv')){
+    $('#lv').innerHTML = items.length ? items.map(fn).join('') : emptyBox(t === 'sms' ? 'smsNone' : t === 'reserve' ? 'resNone' : 'none');
+    setCnt('#cnt', items.length);
+    if (t === 'sms') markRead();
+  }
+  if (t === 'reserve' && u.role === 'manager') paintReserveTable(setCnt);
   if (t === 'lists') ['white', 'black'].forEach(type => {
     const l = db[type]; setCnt('#cnt-' + type, l.length);
     $('#lv-' + type).innerHTML = l.length
@@ -399,50 +493,136 @@ function paintLive(){
       : `<div class="empty" style="padding:24px">${T('emptyL')}</div>`;
   });
 }
+
+/* --- таблица резерва у менеджера --- */
+function toggleRes(d){ ui.resOpen[d] = !ui.resOpen[d]; paintLive(); }
+function paintReserveTable(setCnt){
+  const today = todayStr();
+  const dates = [...new Set([...db.reserves.map(x => x.date), ...db.requests.map(x => x.date)])].filter(d => d >= today).sort();
+  setCnt('#cnt', dates.length);
+  if (!dates.length){ $('#lv').innerHTML = emptyBox('noRes'); return; }
+  $('#lv').innerHTML = `<table class="tbl big"><tr><th>${T('colDate')}</th><th>${T('colRes')}</th><th>${T('colNeed')}</th><th>${T('colReqs')}</th></tr>` + dates.map(d => {
+    const res = resFor(d), reqs = db.requests.filter(r => r.date === d);
+    const need = reqs.reduce((s, r) => s + (r.status === 'pending' ? r.origCount : Math.max(0, r.count - tk(r).length)), 0);
+    const open = ui.resOpen[d];
+    return `<tr class="clk" onclick="toggleRes('${d}')"><td><b>${fmtDate(d)}</b></td><td><span class="cnt">${res.length}</span> <span class="mut">${T('ppl')}</span></td><td>${need}</td><td>${reqs.length}</td></tr>` +
+      (open ? `<tr><td colspan="4" style="padding-top:2px">${res.length ? res.map(p => `<div class="chip" style="margin:3px 6px 3px 0">${ic('user')}<b>${esc(p.name)}</b> · ${esc(p.phone)}</div>`).join('') : `<span class="mut">${T('noRes')}</span>`}</td></tr>` : '');
+  }).join('') + '</table>';
+}
+
+/* --- карточки --- */
+function takersHtml(r, title){
+  const l = tk(r); if (!l.length) return '';
+  return `<div class="tk"><b>${title} (${l.length}/${r.count})</b>${l.map(x =>
+    `<div class="r"><span>${ic('user')}${esc(x.name)}</span><span class="mut">${ic('phone')} ${esc(x.phone)}${x.via === 'reserve' ? ' · ' + T('viaReserve') : ''}</span></div>`).join('')}</div>`;
+}
 function reqCard(r){
-  const u = me(), changed = r.count !== r.origCount, staff = u.role === 'manager';
-  const rm = staff && r.removed && r.removed.length ? `<div class="rm"><b>${T('rmTitle')} (${r.removed.length})</b>${r.removed.map(p =>
+  const u = me(), mgr = u.role === 'manager', l = tk(r), conf = r.status === 'confirmed', full = isFull(r);
+  const changed = r.count !== r.origCount, pct = conf && r.count ? Math.min(100, Math.round(l.length / r.count * 100)) : 0;
+  const rm = mgr && r.removed && r.removed.length ? `<div class="rm"><b>${T('rmTitle')} (${r.removed.length})</b>${r.removed.map(p =>
     `<div class="r"><span>${esc(p.name)} · ${esc(p.phone)}</span>${inList('black', p.phone) ? `<span class="mut">${T('inBlack')}</span>` : `<button class="btn sm dg" onclick="blFromRemoved('${esc(p.phone)}','${esc(p.name)}')">${ic('ban')}${T('toBlack')}</button>`}</div>`).join('')}</div>` : '';
+  const tkBlock = mgr ? takersHtml(r, T('tkTitle')) : (full ? takersHtml(r, T('tkFull')) : '');
   return `<div class="item"><div class="it"><div>
     <div class="wh">${ic('wh')}${esc(r.warehouse)}<span class="st ${r.status}">${T('st_' + r.status)}</span></div>
     <div class="chips">
       <span class="chip">${ic('cal')}<b>${fmtDate(r.date)}</b></span>
       <span class="chip">${ic('clock')}<b>${r.from}–${r.to}</b></span>
       <span class="chip">${ic('users')}${T('people')}: <b>${changed ? r.origCount + ' → ' + r.count : r.count}</b></span>
-      ${staff ? `<span class="chip">${ic('user')}${T('adm')}: <b>${esc(r.byName)}</b></span>` : ''}
+      ${r.adminPhone ? `<span class="chip">${ic('phone')}${T('admTel')}: <b>${esc(r.adminPhone)}</b></span>` : ''}
+      ${mgr ? `<span class="chip">${ic('user')}${T('adm')}: <b>${esc(r.byName)}</b></span>` : ''}
+      ${conf ? `<span class="chip ${full ? 'ok' : ''}">${ic('check')}${T('filled')}: <b>${l.length}/${r.count}</b></span>` : ''}
+    </div>
+    ${conf ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}
+  </div>
+  ${mgr && r.status === 'pending' ? `<button class="btn pr" onclick="openReview('${r.id}')">${ic('check')}${T('review')}</button>` : ''}
+  </div>${tkBlock}${rm}</div>`;
+}
+// карточка для аутсорса: без количества людей и остатка мест
+function shiftCard(r){
+  const u = me(), mine = tk(r).some(x => x.uid === u.id);
+  return `<div class="item"><div class="it"><div>
+    <div class="wh">${ic('wh')}${esc(r.warehouse)}${mine ? `<span class="st ok">${ic('check')}${T('youIn')}</span>` : ''}</div>
+    <div class="chips">
+      <span class="chip">${ic('cal')}<b>${fmtDate(r.date)}</b></span>
+      <span class="chip">${ic('clock')}<b>${r.from}–${r.to}</b></span>
+      ${mine && r.adminPhone ? `<span class="chip ok">${ic('phone')}${T('admTel')}: <b>${esc(r.adminPhone)}</b></span>` : ''}
     </div></div>
-    ${staff && r.status === 'pending' ? `<button class="btn pr" onclick="openReview('${r.id}')">${ic('check')}${T('review')}</button>` : ''}
-  </div>${rm}</div>`;
+    ${mine ? `<button class="btn sm dg" onclick="leaveShift('${r.id}')">${ic('x')}${T('leave')}</button>` : `<button class="btn pr" onclick="takeShift('${r.id}')">${ic('check')}${T('take')}</button>`}
+  </div></div>`;
+}
+function smsCard(s){
+  return `<div class="item sms ${s.read ? '' : 'new'}"><div class="ic">${ic('mail')}</div><div><div>${esc(smsText(s))}</div>
+  <div class="mut" style="font-size:12px;margin-top:4px">${new Date(s.at).toLocaleString(lang === 'uk' ? 'uk-UA' : lang === 'en' ? 'en-GB' : 'ru-RU')}</div></div></div>`;
 }
 
 /* ================= ADMIN: SEND ================= */
 function sendRequest(){
   const e = k => $('#nmsg').innerHTML = `<div class="msg er">${esc(T(k))}</div>`;
   const warehouse = $('#n_wh').value.trim(), count = parseInt($('#n_cnt').value, 10);
-  const date = $('#n_date').value, from = $('#n_from').value, to = $('#n_to').value;
+  const date = $('#n_date').value, from = $('#n_from').value, to = $('#n_to').value, adminPhone = $('#n_aph').value.trim();
   if (!warehouse) return e('e_wh'); if (!count || count < 1) return e('e_cnt');
   if (!date) return e('e_date'); if (!from || !to || from === to) return e('e_time');
+  if (!validPhone(adminPhone)) return e('e_aph');
   db = load();
-  db.requests.push({ id: uid(), warehouse, count, origCount: count, date, from, to, status: 'pending', by: me().id, byName: me().name, createdAt: Date.now(), removed: [] });
+  db.requests.push({ id: uid(), warehouse, count, origCount: count, date, from, to, adminPhone, status: 'pending', by: me().id, byName: me().name, createdAt: Date.now(), removed: [], takers: [] });
   save(); snapshot(); toast(T('sent')); goTab('mine');
 }
+
+/* ================= OUTSOURCE: SHIFT + RESERVE ================= */
+function takeShift(id){
+  db = load(); const u = me(), r = db.requests.find(x => x.id === id);
+  if (!r || r.status !== 'confirmed') return toast(T('already'));
+  r.takers = r.takers || [];
+  if (r.takers.some(x => x.uid === u.id)) return;
+  if (r.takers.length >= r.count) { refreshLive(); return toast(T('e_full')); }
+  if (worksOn(u.id, r.date)) return toast(T('e_busy'));
+  r.takers.push({ uid: u.id, name: u.name, phone: u.phone, via: 'self', at: Date.now() });
+  db.reserves = db.reserves.filter(x => !(x.uid === u.id && x.date === r.date));   // он уже работает в этот день
+  if (r.takers.length >= r.count) r.fullAt = Date.now();
+  save(); snapshot(); toast(T('taken'));
+}
+function leaveShift(id){
+  db = load(); const u = me(), r = db.requests.find(x => x.id === id); if (!r) return;
+  r.takers = tk(r).filter(x => x.uid !== u.id); delete r.fullAt;
+  save(); snapshot(); toast(T('left'));
+}
+function addReserve(){
+  const date = $('#rs_date').value; if (!date) return toast(T('e_resdate'));
+  db = load(); const u = me();
+  if (db.reserves.some(x => x.uid === u.id && x.date === date)) return toast(T('e_resdup'));
+  if (worksOn(u.id, date)) return toast(T('e_busy'));
+  db.reserves.push({ id: uid(), uid: u.id, date, at: Date.now() });
+  save(); $('#rs_date').value = ''; toast(T('resAdded'));
+}
+function cancelReserve(id){ db = load(); db.reserves = db.reserves.filter(x => x.id !== id); save(); }
 
 /* ================= MANAGER: REVIEW ================= */
 function openReview(id){
   const r = db.requests.find(x => x.id === id); if (!r || r.status !== 'pending') return;
   closeModal();
+  const rs = resFor(r.date);
   const m = document.createElement('div'); m.className = 'mbg'; m.id = 'modal';
   m.innerHTML = `<div class="glass modal">
     <h2>${T('m_title')}: ${esc(r.warehouse)}</h2>
-    <div class="chips" style="margin-top:0"><span class="chip">${ic('cal')}<b>${fmtDate(r.date)}</b></span><span class="chip">${ic('clock')}<b>${r.from}–${r.to}</b></span><span class="chip">${ic('user')}${esc(r.byName)}</span></div>
+    <div class="chips" style="margin-top:0"><span class="chip">${ic('cal')}<b>${fmtDate(r.date)}</b></span><span class="chip">${ic('clock')}<b>${r.from}–${r.to}</b></span><span class="chip">${ic('user')}${esc(r.byName)}</span><span class="chip">${ic('phone')}${esc(r.adminPhone || '')}</span></div>
     <label>${T('m_cnt', { n: r.origCount })}</label>
-    <input id="m_cnt" type="number" min="1" max="${r.origCount}" value="${r.origCount}" oninput="rebuildRows(${r.origCount})">
-    <div id="m_rows"></div><div id="m_msg"></div>
+    <input id="m_cnt" type="number" min="1" max="${r.origCount}" value="${r.origCount}" oninput="rebuildRows(${r.origCount});resCount()">
+    <div id="m_rows"></div>
+    <div class="sub" style="margin-top:22px">${ic('bookmark')}${T('m_res', { d: fmtDate(r.date) })}</div>
+    <div class="hint" style="margin-top:0">${T('m_resHint')}</div>
+    <div id="m_res">${rs.length ? rs.map(x => `<label class="chk"><input type="checkbox" value="${x.uid}" onchange="resCount()"><span><b>${esc(x.name)}</b> · ${esc(x.phone)}</span></label>`).join('') : `<div class="mut" style="margin-top:10px">${T('m_resNone')}</div>`}</div>
+    <div class="hint" id="m_rsel"></div>
+    <div id="m_msg"></div>
     <div style="margin-top:22px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
       <button class="btn" onclick="closeModal()">${T('cancel')}</button>
       <button class="btn pr" onclick="confirmReview('${r.id}')">${ic('check')}${T('confirm')}</button>
     </div></div>`;
-  document.body.appendChild(m);
+  document.body.appendChild(m); resCount();
+}
+function resCount(){
+  const e = $('#m_rsel'); if (!e) return;
+  const a = document.querySelectorAll('#m_res input:checked').length, b = parseInt($('#m_cnt').value, 10) || 0;
+  e.textContent = document.querySelectorAll('#m_res input').length ? T('m_resSel', { a, b }) : '';
 }
 function rebuildRows(orig){
   let c = parseInt($('#m_cnt').value, 10); if (isNaN(c)) c = orig;
@@ -462,7 +642,18 @@ function confirmReview(id){
   const rows = [...document.querySelectorAll('.rr')].map(x => ({ name: x.children[0].value.trim(), phone: x.children[1].value.trim() }));
   if (rows.length !== n) return e('e_mrows');
   for (const p of rows){ if (!p.name) return e('e_mfio'); if (!validPhone(p.phone)) return e('e_mtel'); }
-  r.count = c; r.removed = rows; r.status = 'confirmed'; r.confirmedAt = Date.now(); r.confirmedBy = me().name;
+  const picked = [...document.querySelectorAll('#m_res input:checked')].map(x => x.value);
+  if (picked.length > c) return e('e_msel');
+  const avail = resFor(r.date);
+  if (!picked.every(p => avail.some(a => a.uid === p))) return e('e_mbusy');
+  r.count = c; r.removed = rows; r.status = 'confirmed'; r.confirmedAt = Date.now(); r.confirmedBy = me().name; r.takers = [];
+  picked.forEach(p => {
+    const a = avail.find(x => x.uid === p);
+    r.takers.push({ uid: a.uid, name: a.name, phone: a.phone, via: 'reserve', at: Date.now() });
+    db.reserves = db.reserves.filter(x => !(x.uid === a.uid && x.date === r.date));
+    db.sms.push({ id: uid(), to: a.uid, warehouse: r.warehouse, date: r.date, from: r.from, to: r.to, adminPhone: r.adminPhone, at: Date.now(), read: false });  // SMS выбранному из резерва
+  });
+  if (r.takers.length >= r.count) r.fullAt = Date.now();
   save(); snapshot(); closeModal(); toast(T('confirmedOk'));
 }
 function closeModal(){ const m = $('#modal'); if (m) m.remove(); }
@@ -474,7 +665,7 @@ function addList(type){
   db = load();
   if (inList(type, phone)) return toast(T('e_dupL'));
   if (type === 'white' && inList('black', phone)) return toast(T('e_bl1'));
-  if (type === 'black') db.white = db.white.filter(x => pkey(x.phone) !== pkey(phone)); // чёрный сильнее белого
+  if (type === 'black') db.white = db.white.filter(x => pkey(x.phone) !== pkey(phone));   // чёрный сильнее белого
   db[type].push({ phone, note, at: Date.now(), by: me().name });
   save(); $(`#${type}_phone`).value = ''; $(`#${type}_note`).value = '';
   toast(T(type === 'white' ? 'addedW' : 'addedB'));
@@ -488,8 +679,11 @@ function blFromRemoved(phone, name){
 }
 
 /* ================= REAL TIME ================= */
-let seen = {};
-function snapshot(){ seen = {}; db.requests.forEach(r => seen[r.id] = r.status); }
+let seen = {}, seenSms = new Set();
+function snapshot(){
+  seen = {}; db.requests.forEach(r => seen[r.id] = { status: r.status, filled: tk(r).length, full: isFull(r) });
+  seenSms = new Set(db.sms.map(s => s.id));
+}
 function poll(){
   const raw = localStorage.getItem(KEY); if (raw === lastRaw) return;
   lastRaw = raw; db = load();
@@ -498,9 +692,18 @@ function poll(){
   if (u && u.role === 'outsource' && inList('black', u.phone)){ logout(); alert(T('kicked')); return; }
   if (u){
     db.requests.forEach(r => {
-      if (u.role === 'manager' && !(r.id in seen) && r.status === 'pending') toast(T('newReq', { w: r.warehouse, n: r.origCount, d: fmtDate(r.date) }));
-      if (u.role === 'admin' && r.by === u.id && seen[r.id] === 'pending' && r.status === 'confirmed') toast(T('confirmedT', { w: r.warehouse }));
+      const p = seen[r.id], f = tk(r).length, full = isFull(r);
+      if (u.role === 'manager'){
+        if (!p && r.status === 'pending') toast(T('newReq', { w: r.warehouse, n: r.origCount, d: fmtDate(r.date) }));
+        else if (p && p.status === 'confirmed' && r.status === 'confirmed' && p.filled !== f) toast(T('progToast', { w: r.warehouse, f, n: r.count }));
+      }
+      if (u.role === 'admin' && r.by === u.id && p){
+        if (p.status === 'pending' && r.status === 'confirmed') toast(T('confirmedT', { w: r.warehouse }));
+        if (full && !p.full) toast(T('closedToast', { w: r.warehouse, f, n: r.count }));
+        else if (p.status === 'confirmed' && r.status === 'confirmed' && p.filled !== f) toast(T('progToast', { w: r.warehouse, f, n: r.count }));
+      }
     });
+    if (u.role === 'outsource') db.sms.forEach(s => { if (s.to === u.id && !seenSms.has(s.id)) toast(T('smsToast', { t: smsText(s) })); });
     snapshot(); refreshLive();
   }
 }
